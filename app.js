@@ -35,7 +35,7 @@ const storiesPorCategoria = {
                 titulo: 'Confira seu itinerário antes de sair',
                 texto: 'Consulte os horários atualizados da sua linha no Busflix.',
                 link: 'Ver horários'
-                ,imagem: 'documentos/avisos 2.png'
+                ,imagem: 'img/avisos 2.png'
             }]
     },
     local: {
@@ -45,12 +45,12 @@ const storiesPorCategoria = {
             titulo: 'Feira livre neste sábado',
             texto: 'A feira da cidade acontece pela manhã na Praça da Bandeira.',
             link: 'Confira os horários no centro'
-            ,imagem: 'documentos/avisos 2.png'
+            ,imagem: 'img/avisos 2.png'
         }, {
             titulo: 'Novidades perto de você',
             texto: 'Descubra estabelecimentos e ofertas que apoiam o transporte local.',
             link: 'Saiba mais'
-            ,imagem: 'documentos/avisos 2.png'
+            ,imagem: 'img/avisos 2.png'
         }]
     }
 };
