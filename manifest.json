@@ -1,0 +1,18 @@
+{
+  "name": "Busflix",
+  "short_name": "Busflix",
+  "description": "Consulte os horários do transporte público de Caçapava.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F8F9FA",
+  "theme_color": "#FFFFFF",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "img/iconebusapp.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
