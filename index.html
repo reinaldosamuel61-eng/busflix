@@ -4,16 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Busflix - Home</title>
+    <meta name="theme-color" content="#FFFFFF">
+    <meta name="description" content="Consulte os horários do transporte público de Caçapava.">
+    <link rel="icon" type="image/png" href="img/iconepequeno.png">
+    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
     <!-- FontAwesome para os ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
+    <div class="app-splash" id="app-splash" aria-label="Abrindo Busflix">
+        <video autoplay muted playsinline preload="auto" id="splash-video">
+            <source src="img/logoanimado.mp4" type="video/mp4">
+        </video>
+    </div>
+
     <!-- Cabeçalho / Logo -->
     <header class="top-bar">
         <span class="logo-icon"><i class="fa-solid fa-bus"></i></span>
         <h1 class="logo-text">BUSFLIX</h1>
+        <div class="header-actions">
+            <button type="button" class="header-action" id="alternar-tema" aria-label="Ativar modo escuro" title="Modo escuro"><i class="fa-solid fa-moon"></i></button>
+            <button type="button" class="header-action" id="ajustar-fonte" aria-label="Aumentar tamanho da fonte" title="Tamanho da fonte"><i class="fa-solid fa-text-height"></i></button>
+        </div>
     </header>
 
     <!-- Conteúdo Principal -->
@@ -42,7 +56,39 @@
         <section class="welcome-card">
             <p>Bem-vindo ao <strong>Busflix</strong>. Consulte horários e informações do transporte público de Caçapava.</p>
         </section>
+
+        <button type="button" class="favorite-line-trigger" id="abrir-favorita" aria-haspopup="dialog" aria-controls="favorite-line-panel">
+            <span class="favorite-line-icon"><i class="fa-solid fa-star"></i></span>
+            <span class="favorite-line-trigger-copy"><strong id="linha-favorita-label">Escolher linha favorita</strong><small>Toque para configurar</small></span>
+            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="favorite-direction-trigger" id="alterar-sentido" hidden>
+            <i class="fa-solid fa-right-left" aria-hidden="true"></i>
+            <span>Alterar sentido</span>
+        </button>
+        <div id="proximos-horarios" class="next-schedules" aria-live="polite">
+            <p class="aviso-temporario">Escolha uma linha favorita para consultar os próximos horários.</p>
         </div>
+        </div>
+
+        <section class="favorite-line-panel" id="favorite-line-panel" role="dialog" aria-modal="true" aria-labelledby="favorite-line-title" hidden>
+            <div class="favorite-line-modal">
+                <div class="favorite-line-modal-header">
+                    <div>
+                        <span class="page-kicker"><i class="fa-solid fa-star"></i> Preferência</span>
+                        <h2 id="favorite-line-title">Sua linha favorita</h2>
+                    </div>
+                    <button type="button" class="modal-close" id="fechar-favorita" aria-label="Fechar configuração"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <p class="modal-description">Escolha uma linha para acompanhar os próximos horários.</p>
+                <div id="linhas-favoritas" class="favorite-line-options"></div>
+                <button type="button" class="view-all-schedules" id="ver-todos-horarios">
+                    <i class="fa-regular fa-clock" aria-hidden="true"></i>
+                    <span>Ver todos os horários</span>
+                    <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                </button>
+            </div>
+        </section>
 
         <section class="page" id="horarios-page" aria-labelledby="horarios-title">
             <div class="page-heading">
@@ -127,6 +173,12 @@
             <span>Sobre</span>
         </a>
     </nav>
+
+    <aside class="install-notice" id="install-notice" hidden aria-live="polite">
+        <div><strong>Tenha o Busflix no celular</strong><span>Baixe o app para acessar mais rápido.</span></div>
+        <button type="button" id="instalar-app">Baixar</button>
+        <button type="button" class="install-dismiss" id="fechar-install" aria-label="Fechar aviso"><i class="fa-solid fa-xmark"></i></button>
+    </aside>
 
     <script src="app.js?v=7"></script>
 
