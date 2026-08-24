@@ -65,6 +65,9 @@ let inicioToqueX = 0;
 let saidaAtual = 0;
 let tipoDiaAtual = 'dias_uteis';
 let linhaAtual = '';
+let linhaFavorita = localStorage.getItem('busflix-linha-favorita') || '';
+let sentidoFavorito = Number(localStorage.getItem('busflix-sentido-favorito')) || 0;
+let promptInstalacao;
 
 // ==========================================
 // 2. INICIALIZAÇÃO DO APP
@@ -74,7 +77,90 @@ document.addEventListener("DOMContentLoaded", () => {
     carregarHorarios();
     configurarCarrossel(); // Inicia o carrossel junto com o resto do site
     configurarStories();
+    configurarPainelFavorita();
+    configurarAcessibilidade();
+    configurarInstalacaoPwa();
+    configurarTelaAbertura();
+    window.setInterval(renderizarProximosHorarios, 60000);
 });
+
+function configurarTelaAbertura() {
+    const tela = document.getElementById('app-splash');
+    const video = document.getElementById('splash-video');
+    if (!tela || !video) return;
+
+    const fechar = () => {
+        tela.classList.add('is-hidden');
+        window.setTimeout(() => tela.remove(), 350);
+    };
+    video.addEventListener('ended', fechar, { once: true });
+    video.addEventListener('error', fechar, { once: true });
+    window.setTimeout(fechar, 4000);
+}
+
+function configurarAcessibilidade() {
+    const alternarTema = document.getElementById('alternar-tema');
+    const ajustarFonte = document.getElementById('ajustar-fonte');
+    const temaEscuro = localStorage.getItem('busflix-tema') === 'escuro';
+    const tamanhoFonte = localStorage.getItem('busflix-fonte') || 'normal';
+    document.body.classList.toggle('dark-mode', temaEscuro);
+    document.body.classList.toggle('large-font', tamanhoFonte === 'grande');
+    atualizarControleTema(temaEscuro);
+    atualizarControleFonte(tamanhoFonte === 'grande');
+
+    alternarTema?.addEventListener('click', () => {
+        const ativo = document.body.classList.toggle('dark-mode');
+        localStorage.setItem('busflix-tema', ativo ? 'escuro' : 'claro');
+        atualizarControleTema(ativo);
+    });
+    ajustarFonte?.addEventListener('click', () => {
+        const ativo = document.body.classList.toggle('large-font');
+        localStorage.setItem('busflix-fonte', ativo ? 'grande' : 'normal');
+        atualizarControleFonte(ativo);
+    });
+}
+
+function atualizarControleTema(escuro) {
+    const botao = document.getElementById('alternar-tema');
+    if (!botao) return;
+    botao.innerHTML = `<i class="fa-solid fa-${escuro ? 'sun' : 'moon'}"></i>`;
+    botao.setAttribute('aria-label', escuro ? 'Ativar modo claro' : 'Ativar modo escuro');
+    botao.title = escuro ? 'Modo claro' : 'Modo escuro';
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', escuro ? '#111A17' : '#FFFFFF');
+}
+
+function atualizarControleFonte(grande) {
+    const botao = document.getElementById('ajustar-fonte');
+    if (!botao) return;
+    botao.classList.toggle('active', grande);
+    botao.setAttribute('aria-label', grande ? 'Usar tamanho normal da fonte' : 'Aumentar tamanho da fonte');
+}
+
+function configurarInstalacaoPwa() {
+    const aviso = document.getElementById('install-notice');
+    const instalar = document.getElementById('instalar-app');
+    const fechar = document.getElementById('fechar-install');
+    if (!aviso || !instalar || !fechar) return;
+
+    window.addEventListener('beforeinstallprompt', evento => {
+        evento.preventDefault();
+        promptInstalacao = evento;
+        if (!localStorage.getItem('busflix-install-dismissed')) aviso.hidden = false;
+    });
+    instalar.addEventListener('click', async () => {
+        if (!promptInstalacao) return;
+        promptInstalacao.prompt();
+        await promptInstalacao.userChoice;
+        promptInstalacao = null;
+        aviso.hidden = true;
+    });
+    fechar.addEventListener('click', () => {
+        aviso.hidden = true;
+        localStorage.setItem('busflix-install-dismissed', 'true');
+    });
+    window.addEventListener('appinstalled', () => { aviso.hidden = true; });
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(console.error);
+}
 
 
 // ==========================================
@@ -235,6 +321,7 @@ async function carregarHorarios() {
         const resposta = await fetch('horarios.json?v=7');
         dadosGerais = await resposta.json();
         configurarHorarios();
+        configurarLinhaFavorita();
     } catch (erro) {
         console.error("Erro ao carregar os horários:", erro);
         const lista = document.getElementById('lista-horarios');
@@ -401,4 +488,154 @@ function exibirNaTela(dados) {
 
         lista.appendChild(blocoRota);
     });
+}
+
+function configurarLinhaFavorita() {
+    const linhas = [...new Set(dadosGerais.map(rota => rota.linha))];
+    if (!linhas.includes(linhaFavorita)) {
+        linhaFavorita = '';
+        localStorage.removeItem('busflix-linha-favorita');
+    }
+    renderizarOpcoesFavoritas(linhas);
+    renderizarSentidosFavorita();
+    renderizarProximosHorarios();
+}
+
+function configurarPainelFavorita() {
+    const painel = document.getElementById('favorite-line-panel');
+    const abrir = document.getElementById('abrir-favorita');
+    const fechar = document.getElementById('fechar-favorita');
+    const alterarSentido = document.getElementById('alterar-sentido');
+    const verTodosHorarios = document.getElementById('ver-todos-horarios');
+    if (!painel || !abrir || !fechar || !alterarSentido || !verTodosHorarios) return;
+
+    abrir.addEventListener('click', () => {
+        painel.hidden = false;
+        document.body.classList.add('modal-open');
+    });
+    fechar.addEventListener('click', fecharPainelFavorita);
+    alterarSentido.addEventListener('click', alternarSentidoFavorito);
+    verTodosHorarios.addEventListener('click', abrirTodosHorarios);
+    painel.addEventListener('click', evento => {
+        if (evento.target === painel) fecharPainelFavorita();
+    });
+    document.addEventListener('keydown', evento => {
+        if (evento.key === 'Escape' && !painel.hidden) fecharPainelFavorita();
+    });
+}
+
+function fecharPainelFavorita() {
+    const painel = document.getElementById('favorite-line-panel');
+    if (!painel) return;
+    painel.hidden = true;
+    document.body.classList.remove('modal-open');
+}
+
+function renderizarOpcoesFavoritas(linhas) {
+    const container = document.getElementById('linhas-favoritas');
+    if (!container) return;
+    container.innerHTML = linhas.length ? linhas.map(linha => `
+        <button type="button" class="favorite-line-option ${linha === linhaFavorita ? 'active' : ''}" data-favorite-line="${linha}">
+            <i class="fa-solid fa-bus"></i><span>${linha}</span><i class="fa-solid fa-check"></i>
+        </button>
+    `).join('') : '<p class="aviso-temporario">Nenhuma linha disponível.</p>';
+    container.querySelectorAll('[data-favorite-line]').forEach(opcao => opcao.addEventListener('click', () => {
+        linhaFavorita = opcao.dataset.favoriteLine;
+        sentidoFavorito = 0;
+        localStorage.setItem('busflix-linha-favorita', linhaFavorita);
+        localStorage.setItem('busflix-sentido-favorito', sentidoFavorito);
+        renderizarOpcoesFavoritas(linhas);
+        renderizarSentidosFavorita();
+        renderizarProximosHorarios();
+    }));
+}
+
+function renderizarSentidosFavorita() {
+    const botao = document.getElementById('alterar-sentido');
+    const rota = dadosGerais.find(item => item.linha === linhaFavorita && item.tipo_dia === obterTipoDiaAtual()) || dadosGerais.find(item => item.linha === linhaFavorita);
+    const sentidos = rota?.saindo_de || [];
+    if (sentidoFavorito >= sentidos.length) sentidoFavorito = 0;
+    if (botao) {
+        botao.hidden = !linhaFavorita || sentidos.length < 2;
+        botao.title = sentidos.length > 1 ? `Alterar sentido: ${sentidos[sentidoFavorito]?.origem || ''} para ${sentidos[sentidoFavorito]?.destino || ''}` : '';
+    }
+    atualizarLabelFavorita(sentidos[sentidoFavorito]);
+}
+
+function alternarSentidoFavorito() {
+    const rota = dadosGerais.find(item => item.linha === linhaFavorita && item.tipo_dia === obterTipoDiaAtual()) || dadosGerais.find(item => item.linha === linhaFavorita);
+    const totalSentidos = rota?.saindo_de?.length || 0;
+    if (totalSentidos < 2) return;
+    sentidoFavorito = (sentidoFavorito + 1) % totalSentidos;
+    localStorage.setItem('busflix-sentido-favorito', sentidoFavorito);
+    renderizarSentidosFavorita();
+    renderizarProximosHorarios();
+}
+
+function atualizarLabelFavorita(sentido) {
+    const label = document.getElementById('linha-favorita-label');
+    if (label) label.textContent = linhaFavorita || 'Escolher linha favorita';
+    const subtitulo = document.querySelector('.favorite-line-trigger-copy small');
+    if (subtitulo) subtitulo.textContent = sentido ? `${sentido.origem} → ${sentido.destino}` : 'Toque para configurar';
+}
+
+function obterTipoDiaAtual() {
+    const diaDaSemana = new Date().getDay();
+    if (diaDaSemana === 0) return 'domingos_feriados';
+    if (diaDaSemana === 6) return 'sabados';
+    return 'dias_uteis';
+}
+
+function minutosDoHorario(hora) {
+    const [horas, minutos] = hora.split(':').map(Number);
+    return horas * 60 + minutos;
+}
+
+function renderizarProximosHorarios() {
+    const container = document.getElementById('proximos-horarios');
+    if (!container) return;
+    if (!linhaFavorita) {
+        container.innerHTML = '<p class="aviso-temporario">Selecione uma linha para consultar os próximos horários.</p>';
+        return;
+    }
+
+    const tipoDia = obterTipoDiaAtual();
+    const rotas = dadosGerais.filter(item => item.linha === linhaFavorita && item.tipo_dia === tipoDia);
+    const agora = new Date();
+    const minutosAgora = agora.getHours() * 60 + agora.getMinutes();
+    const proximos = rotas.flatMap(rota => (rota.saindo_de || []).filter((_, index) => index === sentidoFavorito).flatMap(saida => (saida.horarios || [])
+        .filter(item => minutosDoHorario(item.hora) >= minutosAgora)
+        .map(horario => ({ origem: saida.origem, destino: saida.destino, horario }))));
+
+    if (!proximos.length) {
+        container.innerHTML = `<p class="aviso-temporario">Não há mais horários para esta linha hoje.</p>`;
+        return;
+    }
+
+    proximos.sort((primeiro, segundo) => minutosDoHorario(primeiro.horario.hora) - minutosDoHorario(segundo.horario.hora));
+    container.innerHTML = proximos.slice(0, 3).map(item => `
+        <div class="next-schedule-item">
+            <strong>${item.horario.hora}</strong>
+            <span><b>${item.origem}</b><small>Para ${item.destino}</small></span>
+        </div>
+    `).join('');
+}
+
+function abrirTodosHorarios() {
+    if (!linhaFavorita) return;
+
+    const botaoHorarios = document.querySelector('[data-page="horarios"]');
+    if (botaoHorarios) botaoHorarios.click();
+    fecharPainelFavorita();
+
+    linhaAtual = linhaFavorita;
+    tipoDiaAtual = obterTipoDiaAtual();
+    saidaAtual = sentidoFavorito;
+
+    const seletorLinha = document.getElementById('seletor-linha');
+    const filtroDia = document.querySelector(`[data-day="${tipoDiaAtual}"]`);
+    if (seletorLinha) seletorLinha.value = linhaAtual;
+    document.querySelectorAll('.day-tab').forEach(item => item.classList.toggle('active', item === filtroDia));
+    renderizarOpcoesSaida();
+    renderizarHorariosSelecionados();
 }
