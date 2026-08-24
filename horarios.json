@@ -47,7 +47,6 @@
         {"hora": "06:40", "observacao": "Vila Velha II -> Padre Marcelo"},
         {"hora": "07:20", "observacao": "Vila Medeiros -> Rodoviária"},
         {"hora": "07:20", "observacao": "Vila Velha II -> Favorino (extra)"},
-
         {"hora": "07:55", "observacao": "Vila Velha II -> Padre Marcelo"},
         {"hora": "08:30", "observacao": "Vila Velha II -> Padre Marcelo"},
         {"hora": "09:05", "observacao": "Vila Velha II -> Padre Marcelo"},
@@ -178,5 +177,27 @@
     "tipo_dia": "domingos_feriados",
     "saindo_de": [],
     "observacoes": []
+  },
+
+  {
+    "linha": "Vila Galvão x Guadalupe",
+    "tipo_dia": "dias_uteis",
+    "saindo_de": [],
+    "observacoes": []
+  },
+  {
+    "linha": "Vila Galvão x Guadalupe",
+    "tipo_dia": "sabados",
+    "saindo_de": [],
+    "observacoes": []
+  },
+  {
+    "linha": "Vila Galvão x Guadalupe",
+    "tipo_dia": "domingos_feriados",
+    "saindo_de": [],
+    "observacoes": []
   }
+
+  
+
 ]

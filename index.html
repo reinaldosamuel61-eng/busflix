@@ -25,14 +25,37 @@
         <span class="logo-icon"><i class="fa-solid fa-bus"></i></span>
         <h1 class="logo-text">BUSFLIX</h1>
         <div class="header-actions">
-            <button type="button" class="header-action" id="alternar-tema" aria-label="Ativar modo escuro" title="Modo escuro"><i class="fa-solid fa-moon"></i></button>
-            <button type="button" class="header-action" id="ajustar-fonte" aria-label="Aumentar tamanho da fonte" title="Tamanho da fonte"><i class="fa-solid fa-text-height"></i></button>
+            <button type="button" class="header-action" id="abrir-configuracoes" aria-label="Abrir configurações" title="Configurações"><i class="fa-solid fa-gear"></i></button>
         </div>
     </header>
+
+    <section class="settings-panel" id="settings-panel" role="dialog" aria-modal="true" aria-labelledby="settings-title" hidden>
+        <div class="settings-modal">
+            <div class="settings-header">
+                <div>
+                    <span class="page-kicker"><i class="fa-solid fa-sliders"></i> Preferências</span>
+                    <h2 id="settings-title">Configurações</h2>
+                </div>
+                <button type="button" class="modal-close" id="fechar-configuracoes" aria-label="Fechar configurações"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <label class="field-label" for="nome-usuario">Como podemos chamar você?</label>
+            <div class="name-setting">
+                <input type="text" id="nome-usuario" maxlength="30" placeholder="Digite seu nome">
+                <button type="button" id="salvar-nome">Salvar</button>
+            </div>
+            <div class="settings-actions">
+                <button type="button" class="settings-action" id="alternar-tema"><i class="fa-solid fa-moon"></i><span>Modo escuro</span><i class="fa-solid fa-chevron-right"></i></button>
+                <button type="button" class="settings-action" id="ajustar-fonte"><i class="fa-solid fa-text-height"></i><span>Tamanho da fonte</span><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </section>
 
     <!-- Conteúdo Principal -->
     <main class="home-content">
         <div class="page active" id="home-page">
+        <section class="greeting" aria-live="polite">
+            <p id="saudacao-usuario">Olá! <span aria-hidden="true">👋</span></p>
+        </section>
         <!-- Cartão Azul (Carrossel / Parceiros) -->
         <section class="partner-card">
             <div class="card-body">
@@ -66,6 +89,7 @@
             <i class="fa-solid fa-right-left" aria-hidden="true"></i>
             <span>Alterar sentido</span>
         </button>
+        <h2 class="next-schedules-title">Próximos horários</h2>
         <div id="proximos-horarios" class="next-schedules" aria-live="polite">
             <p class="aviso-temporario">Escolha uma linha favorita para consultar os próximos horários.</p>
         </div>

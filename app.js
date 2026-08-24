@@ -81,8 +81,70 @@ document.addEventListener("DOMContentLoaded", () => {
     configurarAcessibilidade();
     configurarInstalacaoPwa();
     configurarTelaAbertura();
+    configurarConfiguracoes();
+    renderizarSaudacao();
     window.setInterval(renderizarProximosHorarios, 60000);
 });
+
+function configurarConfiguracoes() {
+    const painel = document.getElementById('settings-panel');
+    const abrir = document.getElementById('abrir-configuracoes');
+    const fechar = document.getElementById('fechar-configuracoes');
+    const salvar = document.getElementById('salvar-nome');
+    const nome = document.getElementById('nome-usuario');
+    if (!painel || !abrir || !fechar || !salvar || !nome) return;
+
+    nome.value = localStorage.getItem('busflix-nome') || '';
+    abrir.addEventListener('click', () => {
+        painel.hidden = false;
+        nome.focus();
+        document.body.classList.add('modal-open');
+    });
+    fechar.addEventListener('click', fecharConfiguracoes);
+    painel.addEventListener('click', evento => {
+        if (evento.target === painel) fecharConfiguracoes();
+    });
+    salvar.addEventListener('click', salvarNomeUsuario);
+    nome.addEventListener('keydown', evento => {
+        if (evento.key === 'Enter') salvarNomeUsuario();
+    });
+    document.addEventListener('keydown', evento => {
+        if (evento.key === 'Escape' && !painel.hidden) fecharConfiguracoes();
+    });
+    if (!localStorage.getItem('busflix-nome')) {
+        painel.hidden = false;
+        document.body.classList.add('modal-open');
+    }
+}
+
+function fecharConfiguracoes() {
+    const painel = document.getElementById('settings-panel');
+    if (!painel) return;
+    painel.hidden = true;
+    document.body.classList.remove('modal-open');
+}
+
+function salvarNomeUsuario() {
+    const nome = document.getElementById('nome-usuario');
+    if (!nome) return;
+    const valor = nome.value.trim();
+    if (!valor) {
+        nome.focus();
+        return;
+    }
+    localStorage.setItem('busflix-nome', valor);
+    renderizarSaudacao();
+    fecharConfiguracoes();
+}
+
+function renderizarSaudacao() {
+    const saudacao = document.getElementById('saudacao-usuario');
+    if (!saudacao) return;
+    const hora = new Date().getHours();
+    const periodo = hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite';
+    const nome = localStorage.getItem('busflix-nome');
+    saudacao.innerHTML = `${periodo}${nome ? `, ${nome}` : ''}! <span aria-hidden="true">🚌</span>`;
+}
 
 function configurarTelaAbertura() {
     const tela = document.getElementById('app-splash');
