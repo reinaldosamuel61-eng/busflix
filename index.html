@@ -98,11 +98,6 @@
         <div id="proximos-horarios" class="next-schedules" aria-live="polite">
             <p class="aviso-temporario">Escolha uma linha favorita para consultar os próximos horários.</p>
         </div>
-        <button type="button" class="view-all-schedules" id="ver-todos-horarios-home">
-            <i class="fa-regular fa-clock" aria-hidden="true"></i>
-            <span>Ver todos os horários</span>
-            <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-        </button>
         </div>
 
         <section class="page" id="horarios-page" aria-labelledby="horarios-title">
@@ -142,19 +137,22 @@
                 <p>Encontrou um problema ou quer enviar uma sugestão?</p>
             </div>
             <div class="contact-list">
-                <a href="mailto:contato@busflix.com" class="contact-item"><i class="fa-regular fa-envelope"></i><span><strong>E-mail</strong><small>contato@busflix.com</small></span><i class="fa-solid fa-chevron-right"></i></a>
-                <a href="tel:+551236512345" class="contact-item"><i class="fa-solid fa-phone"></i><span><strong>Central Busflix</strong><small>(12) 3651-2345</small></span><i class="fa-solid fa-chevron-right"></i></a>
+                <a href="mailto:vt@cidadenatureza.com.br" class="contact-item"><i class="fa-regular fa-envelope"></i><span><strong>E-mail</strong><small>vt@cidadenatureza.com.br</small></span><i class="fa-solid fa-chevron-right"></i></a>
+                <a href="https://www.google.com/maps/search/?api=1&query=R.%20Barreto%20Leme%2C%20130%20-%20Jardim%20Maria%20C%C3%A2ndida%2C%20Ca%C3%A7apava%20-%20SP%2C%2012284-040" class="contact-item" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-location-dot"></i><span><strong>Endereço</strong><small>R. Barreto Leme, 130 - Jardim Maria Cândida, Caçapava - SP, 12284-040</small></span><i class="fa-solid fa-chevron-right"></i></a>
+                <a href="https://wa.me/5512997056410" class="contact-item" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-whatsapp"></i><span><strong>WhatsApp</strong><small>+55 12 99705-6410</small></span><i class="fa-solid fa-chevron-right"></i></a>
+                <a href="https://www.facebook.com/profile.php?id=61561646206898" class="contact-item" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-facebook"></i><span><strong>Facebook</strong><small>Viação Cidade Natureza</small></span><i class="fa-solid fa-chevron-right"></i></a>
+                <a href="https://www.instagram.com/viacaocidadenatureza/" class="contact-item" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-instagram"></i><span><strong>Instagram</strong><small>@viacaocidadenatureza</small></span><i class="fa-solid fa-chevron-right"></i></a>
             </div>
+            <button type="button" class="developer-contact-button" id="abrir-formulario-desenvolvedor"><i class="fa-solid fa-code" aria-hidden="true"></i> Fale com o desenvolvedor</button>
         </section>
 
         <section class="page" id="sobre-page" aria-labelledby="sobre-title">
             <div class="page-heading">
-                <span class="page-kicker"><i class="fa-solid fa-circle-info"></i> O aplicativo</span>
                 <h2 id="sobre-title">Sobre o Busflix</h2>
-                <p>Informação simples para você se movimentar melhor por Caçapava.</p>
             </div>
-            <div class="about-panel"><i class="fa-solid fa-bus"></i><strong>Busflix</strong><span>Versão 1.0</span></div>
-            <p class="about-copy">Consulte horários, acompanhe avisos e planeje seu trajeto em um só lugar.</p>
+            <p class="about-copy">O Busflix é um projeto acadêmico desenvolvido como parte do Projeto Integrador (PI) do curso Técnico em Administração do SENAC.</p>
+            <p class="about-copy">Este projeto não possui fins lucrativos e não tem vínculo com a empresa de ônibus Viação Cidade Natureza.</p>
+            <a class="github-button" href="https://github.com/reinaldosamuel61-eng" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github" aria-hidden="true"></i> Meu GitHub</a>
         </section>
 
     </main>
@@ -207,6 +205,43 @@
                 <p id="gallery-modal-text"></p>
                 <strong id="gallery-modal-link"></strong>
             </div>
+        </div>
+    </div>
+
+    <div class="exit-confirmation" id="exit-confirmation" role="dialog" aria-modal="true" aria-labelledby="exit-confirmation-title" hidden>
+        <div class="exit-confirmation-backdrop" id="exit-confirmation-backdrop"></div>
+        <div class="exit-confirmation-card">
+            <span class="exit-confirmation-icon" aria-hidden="true"><i class="fa-solid fa-arrow-right-from-bracket"></i></span>
+            <h2 id="exit-confirmation-title">Sair do Busflix?</h2>
+            <p>Você será direcionado para fora do aplicativo.</p>
+            <div class="exit-confirmation-actions">
+                <button type="button" class="exit-cancel" id="cancelar-saida">Cancelar</button>
+                <button type="button" class="exit-confirm" id="confirmar-saida">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="developer-modal" id="developer-modal" role="dialog" aria-modal="true" aria-labelledby="developer-modal-title" hidden>
+        <div class="developer-modal-backdrop" id="developer-modal-backdrop"></div>
+        <div class="developer-modal-card">
+            <div class="developer-modal-header">
+                <div>
+                    <span class="page-kicker"><i class="fa-solid fa-code"></i> Fale com a gente</span>
+                    <h2 id="developer-modal-title">Fale com o desenvolvedor</h2>
+                </div>
+                <button type="button" class="modal-close" id="fechar-formulario-desenvolvedor" aria-label="Fechar formulário"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form class="contact-form" action="https://formspree.io/f/mjgzykdp" method="POST">
+                <label class="field-label" for="contato-nome">Nome</label>
+                <input type="text" id="contato-nome" name="nome" autocomplete="name" required>
+                <label class="field-label" for="contato-email">E-mail</label>
+                <input type="email" id="contato-email" name="email" autocomplete="email" required>
+                <label class="field-label" for="contato-assunto">Assunto</label>
+                <input type="text" id="contato-assunto" name="assunto" required>
+                <label class="field-label" for="contato-mensagem">Mensagem</label>
+                <textarea id="contato-mensagem" name="mensagem" rows="5" required></textarea>
+                <button type="submit" class="contact-submit"><i class="fa-regular fa-paper-plane" aria-hidden="true"></i> Enviar mensagem</button>
+            </form>
         </div>
     </div>
 

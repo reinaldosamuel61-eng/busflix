@@ -61,6 +61,11 @@ let linhaAtual = '';
 let linhaFavorita = localStorage.getItem('busflix-linha-favorita') || '';
 let sentidoFavorito = Number(localStorage.getItem('busflix-sentido-favorito')) || 0;
 let promptInstalacao;
+const paginasNavegacao = ['home', 'horarios', 'avisos', 'contato', 'sobre'];
+const ordemSwipe = ['sobre', 'contato', 'home', 'avisos', 'horarios'];
+let paginaAtual = 'home';
+let inicioArrastePaginaX = 0;
+let inicioArrastePaginaY = 0;
 
 // ==========================================
 // 2. INICIALIZAÇÃO DO APP
@@ -75,9 +80,33 @@ document.addEventListener("DOMContentLoaded", () => {
     configurarInstalacaoPwa();
     configurarTelaAbertura();
     configurarConfiguracoes();
+    configurarContatoDesenvolvedor();
     renderizarSaudacao();
     window.setInterval(renderizarProximosHorarios, 60000);
 });
+
+function configurarContatoDesenvolvedor() {
+    const modal = document.getElementById('developer-modal');
+    const abrir = document.getElementById('abrir-formulario-desenvolvedor');
+    const fechar = document.getElementById('fechar-formulario-desenvolvedor');
+    const backdrop = document.getElementById('developer-modal-backdrop');
+    if (!modal || !abrir || !fechar || !backdrop) return;
+
+    const fecharModal = () => {
+        modal.hidden = true;
+        document.body.classList.remove('modal-open');
+    };
+    abrir.addEventListener('click', () => {
+        modal.hidden = false;
+        document.body.classList.add('modal-open');
+        document.getElementById('contato-nome')?.focus();
+    });
+    fechar.addEventListener('click', fecharModal);
+    backdrop.addEventListener('click', fecharModal);
+    document.addEventListener('keydown', evento => {
+        if (evento.key === 'Escape' && !modal.hidden) fecharModal();
+    });
+}
 
 function configurarConfiguracoes() {
     const painel = document.getElementById('settings-panel');
@@ -330,15 +359,88 @@ function configurarNavegacao() {
     const botoes = document.querySelectorAll('[data-page]');
     const secoes = document.querySelectorAll('.page');
 
+    const exibirPagina = pagina => {
+        paginaAtual = paginasNavegacao.includes(pagina) ? pagina : 'home';
+        botoes.forEach(btn => btn.classList.toggle('active', btn.dataset.page === paginaAtual));
+        secoes.forEach(secao => secao.classList.toggle('active', secao.id === `${paginaAtual}-page`));
+    };
+
+    const navegarPara = (pagina, substituir = false) => {
+        const destino = paginasNavegacao.includes(pagina) ? pagina : 'home';
+        if (substituir) {
+            window.history.replaceState({ pagina: destino }, '', `#${destino}`);
+        } else if (destino !== paginaAtual) {
+            window.history.pushState({ pagina: destino }, '', `#${destino}`);
+        }
+        exibirPagina(destino);
+    };
+
     botoes.forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
-            const paginaAlvo = btn.dataset.page;
-
-            botoes.forEach(b => b.classList.toggle('active', b === btn));
-            secoes.forEach(secao => secao.classList.toggle('active', secao.id === `${paginaAlvo}-page`));
+            navegarPara(btn.dataset.page);
         });
     });
+
+    const paginaInicial = window.location.hash.slice(1);
+    navegarPara(paginasNavegacao.includes(paginaInicial) ? paginaInicial : 'home', true);
+    window.history.pushState({ pagina: paginaAtual, guard: true }, '', `#${paginaAtual}`);
+
+    const mostrarConfirmacaoSaida = () => {
+        const modal = document.getElementById('exit-confirmation');
+        if (!modal) return;
+        modal.hidden = false;
+        document.body.classList.add('modal-open');
+        document.getElementById('confirmar-saida')?.focus();
+    };
+
+    const fecharConfirmacaoSaida = () => {
+        const modal = document.getElementById('exit-confirmation');
+        if (!modal) return;
+        modal.hidden = true;
+        document.body.classList.remove('modal-open');
+    };
+
+    document.getElementById('cancelar-saida')?.addEventListener('click', () => {
+        fecharConfirmacaoSaida();
+        window.history.pushState({ pagina: 'home', guard: true }, '', '#home');
+    });
+    document.getElementById('confirmar-saida')?.addEventListener('click', () => {
+        fecharConfirmacaoSaida();
+        window.history.back();
+    });
+    document.getElementById('exit-confirmation-backdrop')?.addEventListener('click', () => {
+        fecharConfirmacaoSaida();
+        window.history.pushState({ pagina: 'home', guard: true }, '', '#home');
+    });
+
+    window.addEventListener('popstate', () => {
+        if (paginaAtual !== 'home') {
+            navegarPara('home', true);
+            return;
+        }
+
+        mostrarConfirmacaoSaida();
+    });
+
+    const principal = document.querySelector('.home-content');
+    principal?.addEventListener('touchstart', evento => {
+        if (evento.target.closest('button, a, input, select, textarea, .gallery-modal')) return;
+        const toque = evento.changedTouches[0];
+        inicioArrastePaginaX = toque.clientX;
+        inicioArrastePaginaY = toque.clientY;
+    }, { passive: true });
+    principal?.addEventListener('touchend', evento => {
+        if (evento.target.closest('button, a, input, select, textarea, .gallery-modal')) return;
+        const toque = evento.changedTouches[0];
+        const deslocamentoX = toque.clientX - inicioArrastePaginaX;
+        const deslocamentoY = toque.clientY - inicioArrastePaginaY;
+        if (Math.abs(deslocamentoX) < 60 || Math.abs(deslocamentoX) <= Math.abs(deslocamentoY)) return;
+
+        const indicePagina = ordemSwipe.indexOf(paginaAtual);
+        const proximaPagina = ordemSwipe[indicePagina + (deslocamentoX > 0 ? 1 : -1)];
+        if (proximaPagina) navegarPara(proximaPagina);
+    }, { passive: true });
 }
 
 // Monta a grade de pôsteres (estilo catálogo da Netflix: só a imagem, sem legenda visível)
@@ -649,9 +751,7 @@ function configurarLinhaFavorita() {
 
 function configurarAcoesFavoritaHome() {
     const alterarSentido = document.getElementById('alterar-sentido');
-    const verTodosHorarios = document.getElementById('ver-todos-horarios-home');
     if (alterarSentido) alterarSentido.addEventListener('click', alternarSentidoFavorito);
-    if (verTodosHorarios) verTodosHorarios.addEventListener('click', abrirTodosHorarios);
 }
 
 function preencherSeletorLinhaFavorita(linhas) {
@@ -745,23 +845,4 @@ function renderizarProximosHorarios() {
             </span>
         </div>
     `).join('');
-}
-
-function abrirTodosHorarios() {
-    if (!linhaFavorita) return;
-
-    const botaoHorarios = document.querySelector('[data-page="horarios"]');
-    if (botaoHorarios) botaoHorarios.click();
-    fecharConfiguracoes();
-
-    linhaAtual = linhaFavorita;
-    tipoDiaAtual = obterTipoDiaAtual();
-    saidaAtual = sentidoFavorito;
-
-    const seletorLinha = document.getElementById('seletor-linha');
-    const filtroDia = document.querySelector(`[data-day="${tipoDiaAtual}"]`);
-    if (seletorLinha) seletorLinha.value = linhaAtual;
-    document.querySelectorAll('.day-tab').forEach(item => item.classList.toggle('active', item === filtroDia));
-    renderizarOpcoesSaida();
-    renderizarHorariosSelecionados();
 }
