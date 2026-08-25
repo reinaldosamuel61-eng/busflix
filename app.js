@@ -2,8 +2,10 @@
 // 1. DADOS DO CARROSSEL (CONECTA BAIRRO)
 // ==========================================
 const bannersHome = [
-    { imagem: 'img/avisos.png', link: '#avisos', alt: 'Aviso sobre o horário de circulação no feriado de 09 de julho' },
-    { imagem: 'img/avisos 2.png', link: '#avisos', alt: 'Informação do transporte público' },
+    { imagem: 'img/banners/avisos.png', link: '#avisos', alt: 'Aviso sobre o horário de circulação no feriado de 09 de julho' },
+    { imagem: 'img/banners/avisos 2.png', link: '#avisos', alt: 'Informação do transporte público' },
+    { imagem: 'img/banners/lechef.png', link: '#avisos', alt: 'Informação do transporte público' },
+
 ];
 
 const avisosDestaque = [
@@ -11,19 +13,19 @@ const avisosDestaque = [
         titulo: 'PAT Caçapava — Vagas abertas!',
         texto: 'O Posto de Atendimento ao Trabalhador tem novas oportunidades de emprego.',
         link: 'patcacapava.sp.gov.br',
-        imagem: 'img/avisos 2.png'
+        imagem: 'img/banners/avisos 2.png'
     },
     {
         titulo: 'Atenção: Desvio na Linha 01',
         texto: 'Devido a obras, os ônibus via Nova Caçapava sofrerão atrasos nesta sexta-feira.',
         link: 'Ver detalhes',
-        imagem: 'img/avisos 2.png'
+        imagem: 'img/banners/avisos 2.png'
     },
     {
         titulo: 'Lanchonete da Praça',
         texto: 'Mostre que usa o Busflix e ganhe desconto no salgado e refrigerante!',
         link: '@lanchonetedapraca'
-        ,imagem: 'img/avisos 2.png'
+        ,imagem: 'img/banners/avisos 2.png'
     }
 ];
 
@@ -35,7 +37,7 @@ const storiesPorCategoria = {
                 titulo: 'Confira seu itinerário antes de sair',
                 texto: 'Consulte os horários atualizados da sua linha no Busflix.',
                 link: 'Ver horários'
-                ,imagem: 'img/avisos 2.png'
+                ,imagem: 'img/banners/avisos 2.png'
             }]
     },
     local: {
@@ -45,12 +47,12 @@ const storiesPorCategoria = {
             titulo: 'Feira livre neste sábado',
             texto: 'A feira da cidade acontece pela manhã na Praça da Bandeira.',
             link: 'Confira os horários no centro'
-            ,imagem: 'img/avisos 2.png'
+            ,imagem: 'img/banners/avisos 2.png'
         }, {
             titulo: 'Novidades perto de você',
             texto: 'Descubra estabelecimentos e ofertas que apoiam o transporte local.',
             link: 'Saiba mais'
-            ,imagem: 'img/avisos 2.png'
+            ,imagem: 'img/banners/avisos 2.png'
         }]
     }
 };
