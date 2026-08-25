@@ -382,6 +382,17 @@ body {
     width: 100%;
 }
 .contact-submit:hover { background: #006B36; }
+.contact-submit:disabled { cursor: wait; opacity: .7; }
+.contact-form-status {
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 1.4;
+    margin: 14px 0 0;
+    padding: 10px 12px;
+}
+.contact-form-status.is-sending { background: #F2F4F7; color: #667085; }
+.contact-form-status.is-success { background: #E8F5ED; color: #006B36; }
+.contact-form-status.is-error { background: #FEE4E2; color: #B42318; }
 
 .developer-contact-button {
     align-items: center;

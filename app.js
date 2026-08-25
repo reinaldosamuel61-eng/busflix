@@ -91,7 +91,9 @@ function configurarContatoDesenvolvedor() {
     const abrir = document.getElementById('abrir-formulario-desenvolvedor');
     const fechar = document.getElementById('fechar-formulario-desenvolvedor');
     const backdrop = document.getElementById('developer-modal-backdrop');
-    if (!modal || !abrir || !fechar || !backdrop) return;
+    const formulario = document.getElementById('formulario-desenvolvedor');
+    const status = document.getElementById('contact-form-status');
+    if (!modal || !abrir || !fechar || !backdrop || !formulario || !status) return;
 
     const fecharModal = () => {
         modal.hidden = true;
@@ -104,6 +106,31 @@ function configurarContatoDesenvolvedor() {
     });
     fechar.addEventListener('click', fecharModal);
     backdrop.addEventListener('click', fecharModal);
+    formulario.addEventListener('submit', async evento => {
+        evento.preventDefault();
+        const botaoEnviar = formulario.querySelector('.contact-submit');
+        status.hidden = false;
+        status.className = 'contact-form-status is-sending';
+        status.textContent = 'Enviando mensagem...';
+        if (botaoEnviar) botaoEnviar.disabled = true;
+
+        try {
+            const resposta = await fetch(formulario.action, {
+                body: new FormData(formulario),
+                headers: { Accept: 'application/json' },
+                method: 'POST'
+            });
+            if (!resposta.ok) throw new Error('Falha ao enviar');
+            formulario.reset();
+            status.className = 'contact-form-status is-success';
+            status.textContent = 'Mensagem enviada com sucesso!';
+        } catch (erro) {
+            status.className = 'contact-form-status is-error';
+            status.textContent = 'Não foi possível enviar agora. Tente novamente.';
+        } finally {
+            if (botaoEnviar) botaoEnviar.disabled = false;
+        }
+    });
     document.addEventListener('keydown', evento => {
         if (evento.key === 'Escape' && !modal.hidden) fecharModal();
     });
