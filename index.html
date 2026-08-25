@@ -127,13 +127,12 @@
             </div>
         </section>
 
-        <section class="page stories-page" id="avisos-page" aria-labelledby="avisos-title">
+        <section class="page gallery-page" id="avisos-page" aria-labelledby="avisos-title">
             <div class="page-heading">
                 <h2 id="avisos-title">Avisos e Novidades</h2>
-                <p>Toque em um story para ver os detalhes.</p>
+                <p>Toque em uma imagem para ver os detalhes.</p>
             </div>
-            <div class="stories-list" id="stories-list"></div>
-            <article class="story-viewer" id="story-viewer"></article>
+            <div class="gallery-grid" id="gallery-grid"></div>
         </section>
 
         <section class="page" id="contato-page" aria-labelledby="contato-title">
@@ -195,7 +194,23 @@
         <button type="button" class="install-dismiss" id="fechar-install" aria-label="Fechar aviso"><i class="fa-solid fa-xmark"></i></button>
     </aside>
 
-    <script src="app.js?v=7"></script>
+    <!-- Modal suspenso: fica escondido (hidden) até um item da galeria ser tocado -->
+    <div class="gallery-modal" id="gallery-modal" role="dialog" aria-modal="true" aria-labelledby="gallery-modal-title" hidden>
+        <div class="gallery-modal-backdrop" id="gallery-modal-backdrop"></div>
+        <div class="gallery-modal-card" id="gallery-modal-card">
+            <button type="button" class="gallery-modal-close" id="gallery-modal-close" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+            <button type="button" class="gallery-modal-arrow gallery-modal-prev" id="gallery-modal-prev" aria-label="Aviso anterior"><i class="fa-solid fa-chevron-left"></i></button>
+            <button type="button" class="gallery-modal-arrow gallery-modal-next" id="gallery-modal-next" aria-label="Próximo aviso"><i class="fa-solid fa-chevron-right"></i></button>
+            <div class="gallery-modal-image" id="gallery-modal-image"></div>
+            <div class="gallery-modal-copy">
+                <h3 id="gallery-modal-title"></h3>
+                <p id="gallery-modal-text"></p>
+                <strong id="gallery-modal-link"></strong>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js?v=9"></script>
 
 </body>
 </html>
