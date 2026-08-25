@@ -412,7 +412,10 @@ function configurarNavegacao() {
     });
     document.getElementById('confirmar-saida')?.addEventListener('click', () => {
         fecharConfirmacaoSaida();
-        window.history.back();
+        window.close();
+        window.setTimeout(() => {
+            if (!document.hidden) window.location.replace('about:blank');
+        }, 100);
     });
     document.getElementById('exit-confirmation-backdrop')?.addEventListener('click', () => {
         fecharConfirmacaoSaida();
