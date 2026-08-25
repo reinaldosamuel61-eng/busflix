@@ -41,12 +41,18 @@
             <label class="field-label" for="nome-usuario">Como podemos chamar você?</label>
             <div class="name-setting">
                 <input type="text" id="nome-usuario" maxlength="30" placeholder="Digite seu nome">
-                <button type="button" id="salvar-nome">Salvar</button>
+            </div>
+            <div class="settings-block">
+                <label class="field-label" for="favorite-line-select">Linha favorita</label>
+                <select id="favorite-line-select" class="line-select settings-select">
+                    <option value="">Selecione uma linha...</option>
+                </select>
             </div>
             <div class="settings-actions">
-                <button type="button" class="settings-action" id="alternar-tema"><i class="fa-solid fa-moon"></i><span>Modo escuro</span><i class="fa-solid fa-chevron-right"></i></button>
-                <button type="button" class="settings-action" id="ajustar-fonte"><i class="fa-solid fa-text-height"></i><span>Tamanho da fonte</span><i class="fa-solid fa-chevron-right"></i></button>
+                <button type="button" class="settings-action" id="alternar-tema"><i class="fa-solid fa-moon"></i><span>Modo escuro</span></button>
+                <button type="button" class="settings-action" id="ajustar-fonte"><i class="fa-solid fa-text-height"></i><span>Aumentar fonte</span></button>
             </div>
+            <button type="button" id="salvar-nome" class="settings-save">Salvar</button>
         </div>
     </section>
 
@@ -80,11 +86,10 @@
             <p>Bem-vindo ao <strong>Busflix</strong>. Consulte horários e informações do transporte público de Caçapava.</p>
         </section>
 
-        <button type="button" class="favorite-line-trigger" id="abrir-favorita" aria-haspopup="dialog" aria-controls="favorite-line-panel">
+        <div class="favorite-line-trigger" aria-live="polite">
             <span class="favorite-line-icon"><i class="fa-solid fa-star"></i></span>
-            <span class="favorite-line-trigger-copy"><strong id="linha-favorita-label">Escolher linha favorita</strong><small>Toque para configurar</small></span>
-            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
-        </button>
+            <span class="favorite-line-trigger-copy"><strong id="linha-favorita-label">Escolher linha favorita</strong><small>Configure em Configurações</small></span>
+        </div>
         <button type="button" class="favorite-direction-trigger" id="alterar-sentido" hidden>
             <i class="fa-solid fa-right-left" aria-hidden="true"></i>
             <span>Alterar sentido</span>
@@ -93,26 +98,12 @@
         <div id="proximos-horarios" class="next-schedules" aria-live="polite">
             <p class="aviso-temporario">Escolha uma linha favorita para consultar os próximos horários.</p>
         </div>
+        <button type="button" class="view-all-schedules" id="ver-todos-horarios-home">
+            <i class="fa-regular fa-clock" aria-hidden="true"></i>
+            <span>Ver todos os horários</span>
+            <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        </button>
         </div>
-
-        <section class="favorite-line-panel" id="favorite-line-panel" role="dialog" aria-modal="true" aria-labelledby="favorite-line-title" hidden>
-            <div class="favorite-line-modal">
-                <div class="favorite-line-modal-header">
-                    <div>
-                        <span class="page-kicker"><i class="fa-solid fa-star"></i> Preferência</span>
-                        <h2 id="favorite-line-title">Sua linha favorita</h2>
-                    </div>
-                    <button type="button" class="modal-close" id="fechar-favorita" aria-label="Fechar configuração"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <p class="modal-description">Escolha uma linha para acompanhar os próximos horários.</p>
-                <div id="linhas-favoritas" class="favorite-line-options"></div>
-                <button type="button" class="view-all-schedules" id="ver-todos-horarios">
-                    <i class="fa-regular fa-clock" aria-hidden="true"></i>
-                    <span>Ver todos os horários</span>
-                    <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-                </button>
-            </div>
-        </section>
 
         <section class="page" id="horarios-page" aria-labelledby="horarios-title">
             <div class="page-heading">

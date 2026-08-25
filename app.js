@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
     carregarHorarios();
     configurarCarrossel(); // Inicia o carrossel junto com o resto do site
     configurarStories();
-    configurarPainelFavorita();
+    configurarAcoesFavoritaHome();
     configurarAcessibilidade();
     configurarInstalacaoPwa();
     configurarTelaAbertura();
@@ -94,14 +94,11 @@ function configurarConfiguracoes() {
     const fechar = document.getElementById('fechar-configuracoes');
     const salvar = document.getElementById('salvar-nome');
     const nome = document.getElementById('nome-usuario');
+    const seletorLinhaFavorita = document.getElementById('favorite-line-select');
     if (!painel || !abrir || !fechar || !salvar || !nome) return;
 
     nome.value = localStorage.getItem('busflix-nome') || '';
-    abrir.addEventListener('click', () => {
-        painel.hidden = false;
-        nome.focus();
-        document.body.classList.add('modal-open');
-    });
+    abrir.addEventListener('click', () => abrirConfiguracoes('nome-usuario'));
     fechar.addEventListener('click', fecharConfiguracoes);
     painel.addEventListener('click', evento => {
         if (evento.target === painel) fecharConfiguracoes();
@@ -110,6 +107,21 @@ function configurarConfiguracoes() {
     nome.addEventListener('keydown', evento => {
         if (evento.key === 'Enter') salvarNomeUsuario();
     });
+
+    seletorLinhaFavorita?.addEventListener('change', () => {
+        linhaFavorita = seletorLinhaFavorita.value;
+        sentidoFavorito = 0;
+        if (linhaFavorita) {
+            localStorage.setItem('busflix-linha-favorita', linhaFavorita);
+            localStorage.setItem('busflix-sentido-favorito', String(sentidoFavorito));
+        } else {
+            localStorage.removeItem('busflix-linha-favorita');
+            localStorage.removeItem('busflix-sentido-favorito');
+        }
+        renderizarSentidosFavorita();
+        renderizarProximosHorarios();
+    });
+
     document.addEventListener('keydown', evento => {
         if (evento.key === 'Escape' && !painel.hidden) fecharConfiguracoes();
     });
@@ -117,6 +129,15 @@ function configurarConfiguracoes() {
         painel.hidden = false;
         document.body.classList.add('modal-open');
     }
+}
+
+function abrirConfiguracoes(campoFoco = 'nome-usuario') {
+    const painel = document.getElementById('settings-panel');
+    if (!painel) return;
+    painel.hidden = false;
+    document.body.classList.add('modal-open');
+    const campo = document.getElementById(campoFoco);
+    campo?.focus();
 }
 
 function fecharConfiguracoes() {
@@ -145,7 +166,7 @@ function renderizarSaudacao() {
     const hora = new Date().getHours();
     const periodo = hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite';
     const nome = localStorage.getItem('busflix-nome');
-    saudacao.innerHTML = `${periodo}${nome ? `, ${nome}` : ''}! <span aria-hidden="true">🚌</span>`;
+    saudacao.innerHTML = `${periodo}${nome ? `, ${nome}` : ''}! <span aria-hidden="true">👋</span>`;
 }
 
 function configurarTelaAbertura() {
@@ -187,7 +208,8 @@ function configurarAcessibilidade() {
 function atualizarControleTema(escuro) {
     const botao = document.getElementById('alternar-tema');
     if (!botao) return;
-    botao.innerHTML = `<i class="fa-solid fa-${escuro ? 'sun' : 'moon'}"></i>`;
+    const texto = escuro ? 'Modo claro' : 'Modo escuro';
+    botao.innerHTML = `<i class="fa-solid fa-${escuro ? 'sun' : 'moon'}"></i><span>${texto}</span>`;
     botao.setAttribute('aria-label', escuro ? 'Ativar modo claro' : 'Ativar modo escuro');
     botao.title = escuro ? 'Modo claro' : 'Modo escuro';
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', escuro ? '#111A17' : '#FFFFFF');
@@ -223,7 +245,27 @@ function configurarInstalacaoPwa() {
         localStorage.setItem('busflix-install-dismissed', 'true');
     });
     window.addEventListener('appinstalled', () => { aviso.hidden = true; });
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(console.error);
+
+    if (!('serviceWorker' in navigator)) return;
+
+    const hostLocal = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
+    if (hostLocal) {
+        desativarCacheNoAmbienteLocal();
+        return;
+    }
+
+    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).catch(console.error);
+}
+
+async function desativarCacheNoAmbienteLocal() {
+    try {
+        const registros = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registros.map(registro => registro.unregister()));
+        const nomesCache = await caches.keys();
+        await Promise.all(nomesCache.map(nome => caches.delete(nome)));
+    } catch (erro) {
+        console.warn('Falha ao limpar cache local de desenvolvimento:', erro);
+    }
 }
 
 
@@ -560,68 +602,44 @@ function configurarLinhaFavorita() {
         linhaFavorita = '';
         localStorage.removeItem('busflix-linha-favorita');
     }
-    renderizarOpcoesFavoritas(linhas);
+    preencherSeletorLinhaFavorita(linhas);
     renderizarSentidosFavorita();
     renderizarProximosHorarios();
 }
 
-function configurarPainelFavorita() {
-    const painel = document.getElementById('favorite-line-panel');
-    const abrir = document.getElementById('abrir-favorita');
-    const fechar = document.getElementById('fechar-favorita');
+function configurarAcoesFavoritaHome() {
     const alterarSentido = document.getElementById('alterar-sentido');
-    const verTodosHorarios = document.getElementById('ver-todos-horarios');
-    if (!painel || !abrir || !fechar || !alterarSentido || !verTodosHorarios) return;
-
-    abrir.addEventListener('click', () => {
-        painel.hidden = false;
-        document.body.classList.add('modal-open');
-    });
-    fechar.addEventListener('click', fecharPainelFavorita);
-    alterarSentido.addEventListener('click', alternarSentidoFavorito);
-    verTodosHorarios.addEventListener('click', abrirTodosHorarios);
-    painel.addEventListener('click', evento => {
-        if (evento.target === painel) fecharPainelFavorita();
-    });
-    document.addEventListener('keydown', evento => {
-        if (evento.key === 'Escape' && !painel.hidden) fecharPainelFavorita();
-    });
+    const verTodosHorarios = document.getElementById('ver-todos-horarios-home');
+    if (alterarSentido) alterarSentido.addEventListener('click', alternarSentidoFavorito);
+    if (verTodosHorarios) verTodosHorarios.addEventListener('click', abrirTodosHorarios);
 }
 
-function fecharPainelFavorita() {
-    const painel = document.getElementById('favorite-line-panel');
-    if (!painel) return;
-    painel.hidden = true;
-    document.body.classList.remove('modal-open');
-}
-
-function renderizarOpcoesFavoritas(linhas) {
-    const container = document.getElementById('linhas-favoritas');
-    if (!container) return;
-    container.innerHTML = linhas.length ? linhas.map(linha => `
-        <button type="button" class="favorite-line-option ${linha === linhaFavorita ? 'active' : ''}" data-favorite-line="${linha}">
-            <i class="fa-solid fa-bus"></i><span>${linha}</span><i class="fa-solid fa-check"></i>
-        </button>
-    `).join('') : '<p class="aviso-temporario">Nenhuma linha disponível.</p>';
-    container.querySelectorAll('[data-favorite-line]').forEach(opcao => opcao.addEventListener('click', () => {
-        linhaFavorita = opcao.dataset.favoriteLine;
-        sentidoFavorito = 0;
-        localStorage.setItem('busflix-linha-favorita', linhaFavorita);
-        localStorage.setItem('busflix-sentido-favorito', sentidoFavorito);
-        renderizarOpcoesFavoritas(linhas);
-        renderizarSentidosFavorita();
-        renderizarProximosHorarios();
-    }));
+function preencherSeletorLinhaFavorita(linhas) {
+    const seletor = document.getElementById('favorite-line-select');
+    if (!seletor) return;
+    seletor.innerHTML = '<option value="">Selecione uma linha...</option>';
+    linhas.forEach(linha => {
+        const opcao = document.createElement('option');
+        opcao.value = linha;
+        opcao.textContent = linha;
+        seletor.appendChild(opcao);
+    });
+    seletor.value = linhaFavorita;
 }
 
 function renderizarSentidosFavorita() {
     const botao = document.getElementById('alterar-sentido');
+    const seletorLinha = document.getElementById('favorite-line-select');
     const rota = dadosGerais.find(item => item.linha === linhaFavorita && item.tipo_dia === obterTipoDiaAtual()) || dadosGerais.find(item => item.linha === linhaFavorita);
     const sentidos = rota?.saindo_de || [];
+    if (seletorLinha && seletorLinha.value !== linhaFavorita) {
+        seletorLinha.value = linhaFavorita;
+    }
     if (sentidoFavorito >= sentidos.length) sentidoFavorito = 0;
+
     if (botao) {
         botao.hidden = !linhaFavorita || sentidos.length < 2;
-        botao.title = sentidos.length > 1 ? `Alterar sentido: ${sentidos[sentidoFavorito]?.origem || ''} para ${sentidos[sentidoFavorito]?.destino || ''}` : '';
+        botao.title = sentidos.length > 1 ? `Alterar sentido: saindo de ${sentidos[sentidoFavorito]?.origem || ''} para ${sentidos[sentidoFavorito]?.destino || ''}` : '';
     }
     atualizarLabelFavorita(sentidos[sentidoFavorito]);
 }
@@ -640,7 +658,9 @@ function atualizarLabelFavorita(sentido) {
     const label = document.getElementById('linha-favorita-label');
     if (label) label.textContent = linhaFavorita || 'Escolher linha favorita';
     const subtitulo = document.querySelector('.favorite-line-trigger-copy small');
-    if (subtitulo) subtitulo.textContent = sentido ? `${sentido.origem} → ${sentido.destino}` : 'Toque para configurar';
+    if (subtitulo) subtitulo.innerHTML = sentido
+        ? `Origem: ${sentido.origem}<br>Destino: ${sentido.destino}`
+        : 'Configure em Configurações';
 }
 
 function obterTipoDiaAtual() {
@@ -680,7 +700,9 @@ function renderizarProximosHorarios() {
     container.innerHTML = proximos.slice(0, 3).map(item => `
         <div class="next-schedule-item">
             <strong>${item.horario.hora}</strong>
-            <span><b>${item.origem}</b><small>Para ${item.destino}</small></span>
+            <span>
+                ${item.horario.observacao ? `<small>[${item.horario.observacao}]</small>` : ''}
+            </span>
         </div>
     `).join('');
 }
@@ -690,7 +712,7 @@ function abrirTodosHorarios() {
 
     const botaoHorarios = document.querySelector('[data-page="horarios"]');
     if (botaoHorarios) botaoHorarios.click();
-    fecharPainelFavorita();
+    fecharConfiguracoes();
 
     linhaAtual = linhaFavorita;
     tipoDiaAtual = obterTipoDiaAtual();
