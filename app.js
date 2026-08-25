@@ -66,6 +66,7 @@ const ordemSwipe = ['sobre', 'contato', 'home', 'avisos', 'horarios'];
 let paginaAtual = 'home';
 let inicioArrastePaginaX = 0;
 let inicioArrastePaginaY = 0;
+let retornoHomeArmado = false;
 
 // ==========================================
 // 2. INICIALIZAÇÃO DO APP
@@ -367,6 +368,7 @@ function configurarNavegacao() {
 
     const navegarPara = (pagina, substituir = false) => {
         const destino = paginasNavegacao.includes(pagina) ? pagina : 'home';
+        retornoHomeArmado = false;
         if (substituir) {
             window.history.replaceState({ pagina: destino }, '', `#${destino}`);
         } else if (destino !== paginaAtual) {
@@ -384,6 +386,7 @@ function configurarNavegacao() {
 
     const paginaInicial = window.location.hash.slice(1);
     navegarPara(paginasNavegacao.includes(paginaInicial) ? paginaInicial : 'home', true);
+    window.history.pushState({ pagina: paginaAtual, guard: true }, '', `#${paginaAtual}`);
     window.history.pushState({ pagina: paginaAtual, guard: true }, '', `#${paginaAtual}`);
 
     const mostrarConfirmacaoSaida = () => {
@@ -404,6 +407,8 @@ function configurarNavegacao() {
     document.getElementById('cancelar-saida')?.addEventListener('click', () => {
         fecharConfirmacaoSaida();
         window.history.pushState({ pagina: 'home', guard: true }, '', '#home');
+        window.history.pushState({ pagina: 'home', guard: true }, '', '#home');
+        retornoHomeArmado = false;
     });
     document.getElementById('confirmar-saida')?.addEventListener('click', () => {
         fecharConfirmacaoSaida();
@@ -412,11 +417,20 @@ function configurarNavegacao() {
     document.getElementById('exit-confirmation-backdrop')?.addEventListener('click', () => {
         fecharConfirmacaoSaida();
         window.history.pushState({ pagina: 'home', guard: true }, '', '#home');
+        window.history.pushState({ pagina: 'home', guard: true }, '', '#home');
+        retornoHomeArmado = false;
     });
 
     window.addEventListener('popstate', () => {
         if (paginaAtual !== 'home') {
             navegarPara('home', true);
+            window.history.pushState({ pagina: 'home', guard: true }, '', '#home');
+            retornoHomeArmado = false;
+            return;
+        }
+
+        if (!retornoHomeArmado) {
+            retornoHomeArmado = true;
             return;
         }
 
