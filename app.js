@@ -432,7 +432,20 @@ function configurarInstalacaoPwa() {
         return;
     }
 
-    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).catch(console.error);
+    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(registro => {
+        let recarregou = false;
+        if (navigator.serviceWorker.controller) {
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (recarregou) return;
+                recarregou = true;
+                window.location.reload();
+            });
+        }
+        registro.update().catch(() => {});
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') registro.update().catch(() => {});
+        });
+    }).catch(console.error);
 }
 
 async function desativarCacheNoAmbienteLocal() {
