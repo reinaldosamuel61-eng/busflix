@@ -328,6 +328,26 @@ body {
 
 .contact-list { display: grid; gap: 10px; }
 
+.company-contact-button,
+.company-continue-button {
+    align-items: center;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    font-size: 13px;
+    font-weight: 700;
+    gap: 8px;
+    justify-content: center;
+    padding: 13px 14px;
+    width: 100%;
+}
+
+.company-contact-button { background: #008A45; color: #FFFFFF; margin-top: 2px; }
+.company-contact-button:hover { background: #006B36; }
+.company-continue-button { background: #E8F5ED; color: #006B36; margin-top: 10px; }
+.company-continue-button:hover { background: #D7F5E1; }
+
 .contact-item {
     align-items: center;
     background: #ffffff;
@@ -412,6 +432,34 @@ body {
 }
 .developer-contact-button:hover { background: #12213A; }
 
+.company-modal[hidden] { display: none; }
+.company-modal {
+    align-items: center;
+    display: flex;
+    inset: 0;
+    justify-content: center;
+    overflow-y: auto;
+    padding: 20px;
+    position: fixed;
+    z-index: 2100;
+}
+.company-modal-backdrop { background: rgba(10, 14, 13, .62); inset: 0; position: fixed; }
+.company-modal-card {
+    background: #FFFFFF;
+    border-radius: 14px;
+    box-shadow: 0 16px 40px rgba(26, 43, 73, .24);
+    max-height: calc(100vh - 40px);
+    max-width: 520px;
+    overflow-y: auto;
+    padding: 22px;
+    position: relative;
+    width: 100%;
+}
+.company-modal-copy { color: #475467; font-size: 14px; line-height: 1.55; margin: 18px 0 0; }
+.company-modal-actions { margin-top: 20px; }
+.company-modal-actions .developer-contact-button { margin-top: 0; }
+.company-contact-list { margin-top: 20px; }
+
 .developer-modal[hidden] { display: none; }
 .developer-modal {
     align-items: center;
@@ -440,6 +488,9 @@ body {
 .developer-modal .contact-form { border: 0; margin-top: 20px; padding: 0; }
 .dark-mode .developer-modal-card { background: #1B2924; }
 .dark-mode .developer-modal-header h2 { color: #E7ECE9; }
+.dark-mode .company-modal-card { background: #1B2924; }
+.dark-mode .company-modal-copy { color: #C1CEC7; }
+.dark-mode .company-continue-button { background: #203F30; color: #D7F5E1; }
 
 .about-panel {
     align-items: center;
@@ -768,6 +819,20 @@ body {
 
 .next-schedule-item b { color: #344054; font-size: 12px; }
 .next-schedule-item small { color: #667085; font-size: 11px; }
+
+.next-schedule-item.is-in-transit > strong,
+.next-schedule-item.is-in-transit b { color: #D97706; }
+
+.next-schedule-item.is-in-transit b { animation: transit-pulse 1.2s ease-in-out infinite; }
+
+@keyframes transit-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .35; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .next-schedule-item.is-in-transit b { animation: none; }
+}
 
 .large-font { font-size: 112%; zoom: 1.08; }
 

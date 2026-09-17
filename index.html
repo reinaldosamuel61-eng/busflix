@@ -115,7 +115,7 @@
             <div class="day-tabs" id="filtros-dia" role="tablist" aria-label="Dias de operação">
                 <button type="button" class="day-tab active" data-day="dias_uteis" role="tab">Dias úteis</button>
                 <button type="button" class="day-tab" data-day="sabados" role="tab">Sábados</button>
-                <button type="button" class="day-tab" data-day="domingos_feriados" role="tab">Feriados</button>
+                <button type="button" class="day-tab" data-day="domingos_feriados" role="tab">Domingos e feriados</button>
             </div>
             <div id="lista-horarios" class="lista-horarios">
                 <p class="aviso-temporario">Carregando horários...</p>
@@ -135,13 +135,7 @@
                 <h2 id="contato-title">Contato</h2>
                 <p>Encontrou um problema ou quer enviar uma sugestão?</p>
             </div>
-            <div class="contact-list">
-                <a href="mailto:vt@cidadenatureza.com.br" class="contact-item"><i class="fa-regular fa-envelope"></i><span><strong>E-mail</strong><small>vt@cidadenatureza.com.br</small></span><i class="fa-solid fa-chevron-right"></i></a>
-                <a href="https://www.google.com/maps/search/?api=1&query=R.%20Barreto%20Leme%2C%20130%20-%20Jardim%20Maria%20C%C3%A2ndida%2C%20Ca%C3%A7apava%20-%20SP%2C%2012284-040" class="contact-item" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-location-dot"></i><span><strong>Endereço</strong><small>R. Barreto Leme, 130 - Jardim Maria Cândida, Caçapava - SP, 12284-040</small></span><i class="fa-solid fa-chevron-right"></i></a>
-                <a href="https://wa.me/5512997056410" class="contact-item" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-whatsapp"></i><span><strong>WhatsApp</strong><small>+55 12 99705-6410</small></span><i class="fa-solid fa-chevron-right"></i></a>
-                <a href="https://www.facebook.com/profile.php?id=61561646206898" class="contact-item" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-facebook"></i><span><strong>Facebook</strong><small>Viação Cidade Natureza</small></span><i class="fa-solid fa-chevron-right"></i></a>
-                <a href="https://www.instagram.com/viacaocidadenatureza/" class="contact-item" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-instagram"></i><span><strong>Instagram</strong><small>@viacaocidadenatureza</small></span><i class="fa-solid fa-chevron-right"></i></a>
-            </div>
+            <button type="button" class="company-contact-button" id="abrir-contato-empresa"><i class="fa-solid fa-building" aria-hidden="true"></i> Fale com a empresa</button>
             <button type="button" class="developer-contact-button" id="abrir-formulario-desenvolvedor"><i class="fa-solid fa-code" aria-hidden="true"></i> Fale com o desenvolvedor</button>
         </section>
 
@@ -216,6 +210,45 @@
             <div class="exit-confirmation-actions">
                 <button type="button" class="exit-cancel" id="cancelar-saida">Cancelar</button>
                 <button type="button" class="exit-confirm" id="confirmar-saida">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="company-modal" id="company-disclaimer-modal" role="dialog" aria-modal="true" aria-labelledby="company-disclaimer-title" hidden>
+        <div class="company-modal-backdrop" data-company-modal-close></div>
+        <div class="company-modal-card">
+            <div class="developer-modal-header">
+                <div>
+                    <span class="page-kicker"><i class="fa-solid fa-circle-info"></i> Antes de continuar</span>
+                    <h2 id="company-disclaimer-title">Fale com a empresa</h2>
+                </div>
+                <button type="button" class="modal-close" data-company-modal-close aria-label="Fechar aviso"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="company-modal-copy">O Busflix é um projeto independente e não possui relação com a Viação Cidade Natureza.</p>
+            <p class="company-modal-copy">Para dúvidas, sugestões ou problemas relacionados ao aplicativo, fale diretamente com o desenvolvedor.</p>
+            <div class="company-modal-actions">
+                <button type="button" class="developer-contact-button" id="abrir-desenvolvedor-do-aviso"><i class="fa-solid fa-code" aria-hidden="true"></i> Falar com o desenvolvedor</button>
+                <button type="button" class="company-continue-button" id="abrir-contatos-viacao">Quero falar com a viação</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="company-modal" id="company-contacts-modal" role="dialog" aria-modal="true" aria-labelledby="company-contacts-title" hidden>
+        <div class="company-modal-backdrop" data-company-modal-close></div>
+        <div class="company-modal-card">
+            <div class="developer-modal-header">
+                <div>
+                    <span class="page-kicker"><i class="fa-solid fa-building"></i> Viação Cidade Natureza</span>
+                    <h2 id="company-contacts-title">Contatos da empresa</h2>
+                </div>
+                <button type="button" class="modal-close" data-company-modal-close aria-label="Fechar contatos"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="contact-list company-contact-list">
+                <a href="mailto:vt@cidadenatureza.com.br" class="contact-item"><i class="fa-regular fa-envelope"></i><span><strong>E-mail</strong><small>vt@cidadenatureza.com.br</small></span><i class="fa-solid fa-chevron-right"></i></a>
+                <a href="https://www.google.com/maps/search/?api=1&query=R.%20Barreto%20Leme%2C%20130%20-%20Jardim%20Maria%20C%C3%A2ndida%2C%20Ca%C3%A7apava%20-%20SP%2C%2012284-040" class="contact-item" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-location-dot"></i><span><strong>Endereço</strong><small>R. Barreto Leme, 130 - Jardim Maria Cândida, Caçapava - SP, 12284-040</small></span><i class="fa-solid fa-chevron-right"></i></a>
+                <a href="https://wa.me/5512997056410" class="contact-item" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-whatsapp"></i><span><strong>WhatsApp</strong><small>+55 12 99705-6410</small></span><i class="fa-solid fa-chevron-right"></i></a>
+                <a href="https://www.facebook.com/profile.php?id=61561646206898" class="contact-item" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-facebook"></i><span><strong>Facebook</strong><small>Viação Cidade Natureza</small></span><i class="fa-solid fa-chevron-right"></i></a>
+                <a href="https://www.instagram.com/viacaocidadenatureza/" class="contact-item" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-instagram"></i><span><strong>Instagram</strong><small>@viacaocidadenatureza</small></span><i class="fa-solid fa-chevron-right"></i></a>
             </div>
         </div>
     </div>

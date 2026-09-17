@@ -83,10 +83,28 @@ document.addEventListener("DOMContentLoaded", () => {
     configurarConfiguracoes();
     configurarContatoDesenvolvedor();
     renderizarSaudacao();
-    window.setInterval(renderizarProximosHorarios, 60000);
+    window.setInterval(() => {
+        const tipoDia = obterTipoDiaAtual();
+        if (tipoDia !== tipoDiaAtual) {
+            tipoDiaAtual = tipoDia;
+            saidaAtual = 0;
+            document.querySelectorAll('.day-tab').forEach(filtro => {
+                const ativo = filtro.dataset.day === tipoDiaAtual;
+                filtro.classList.toggle('active', ativo);
+                filtro.setAttribute('aria-selected', String(ativo));
+            });
+        }
+        renderizarProximosHorarios();
+        renderizarHorariosSelecionados();
+    }, 60000);
 });
 
 function configurarContatoDesenvolvedor() {
+    const avisoEmpresa = document.getElementById('company-disclaimer-modal');
+    const contatosViacao = document.getElementById('company-contacts-modal');
+    const abrirContatoEmpresa = document.getElementById('abrir-contato-empresa');
+    const abrirContatosViacao = document.getElementById('abrir-contatos-viacao');
+    const abrirDesenvolvedorDoAviso = document.getElementById('abrir-desenvolvedor-do-aviso');
     const modal = document.getElementById('developer-modal');
     const abrir = document.getElementById('abrir-formulario-desenvolvedor');
     const fechar = document.getElementById('fechar-formulario-desenvolvedor');
@@ -99,6 +117,27 @@ function configurarContatoDesenvolvedor() {
         modal.hidden = true;
         document.body.classList.remove('modal-open');
     };
+    const fecharModalEmpresa = elemento => {
+        elemento.hidden = true;
+        if (avisoEmpresa.hidden && contatosViacao.hidden && modal.hidden) document.body.classList.remove('modal-open');
+    };
+    abrirContatoEmpresa?.addEventListener('click', () => {
+        avisoEmpresa.hidden = false;
+        document.body.classList.add('modal-open');
+    });
+    abrirContatosViacao?.addEventListener('click', () => {
+        avisoEmpresa.hidden = true;
+        contatosViacao.hidden = false;
+    });
+    abrirDesenvolvedorDoAviso?.addEventListener('click', () => {
+        avisoEmpresa.hidden = true;
+        modal.hidden = false;
+        document.body.classList.add('modal-open');
+        document.getElementById('contato-nome')?.focus();
+    });
+    document.querySelectorAll('[data-company-modal-close]').forEach(botao => {
+        botao.addEventListener('click', () => fecharModalEmpresa(botao.closest('.company-modal')));
+    });
     abrir.addEventListener('click', () => {
         modal.hidden = false;
         document.body.classList.add('modal-open');
@@ -132,7 +171,10 @@ function configurarContatoDesenvolvedor() {
         }
     });
     document.addEventListener('keydown', evento => {
-        if (evento.key === 'Escape' && !modal.hidden) fecharModal();
+        if (evento.key !== 'Escape') return;
+        if (!modal.hidden) fecharModal();
+        else if (!avisoEmpresa.hidden) fecharModalEmpresa(avisoEmpresa);
+        else if (!contatosViacao.hidden) fecharModalEmpresa(contatosViacao);
     });
 }
 
@@ -638,7 +680,13 @@ function configurarHorarios() {
         seletorLinha.appendChild(opcao);
     });
     linhaAtual = linhas[0] || '';
+    tipoDiaAtual = obterTipoDiaAtual();
     seletorLinha.value = linhaAtual;
+    filtros.forEach(filtro => {
+        const ativo = filtro.dataset.day === tipoDiaAtual;
+        filtro.classList.toggle('active', ativo);
+        filtro.setAttribute('aria-selected', String(ativo));
+    });
     seletorLinha.addEventListener('change', () => {
         linhaAtual = seletorLinha.value;
         saidaAtual = 0;
@@ -657,7 +705,11 @@ function configurarHorarios() {
     filtros.forEach(filtro => filtro.addEventListener('click', () => {
         tipoDiaAtual = filtro.dataset.day;
         saidaAtual = 0;
-        filtros.forEach(item => item.classList.toggle('active', item === filtro));
+        filtros.forEach(item => {
+            const ativo = item === filtro;
+            item.classList.toggle('active', ativo);
+            item.setAttribute('aria-selected', String(ativo));
+        });
         renderizarOpcoesSaida();
         renderizarHorariosSelecionados();
     }));
@@ -742,7 +794,8 @@ function exibirNaTela(dados) {
                     if (!horarios.length) return;
                     const turno = document.createElement('details');
                     turno.className = 'period-accordion';
-                    turno.open = periodo === 'manhã';
+                    const periodoAtual = obterPeriodoAtual();
+                    turno.open = periodo === periodoAtual || (!horariosPorPeriodo[periodoAtual].length && periodo === 'manhã');
 
                     const tituloPeriodo = document.createElement('summary');
                     tituloPeriodo.className = 'period-title';
@@ -854,6 +907,11 @@ function obterTipoDiaAtual() {
     return 'dias_uteis';
 }
 
+function obterPeriodoAtual() {
+    const hora = new Date().getHours();
+    return hora < 12 ? 'manhã' : hora < 18 ? 'tarde' : 'noite';
+}
+
 function minutosDoHorario(hora) {
     const [horas, minutos] = hora.split(':').map(Number);
     return horas * 60 + minutos;
@@ -871,20 +929,32 @@ function renderizarProximosHorarios() {
     const rotas = dadosGerais.filter(item => item.linha === linhaFavorita && item.tipo_dia === tipoDia);
     const agora = new Date();
     const minutosAgora = agora.getHours() * 60 + agora.getMinutes();
-    const proximos = rotas.flatMap(rota => (rota.saindo_de || []).filter((_, index) => index === sentidoFavorito).flatMap(saida => (saida.horarios || [])
-        .filter(item => minutosDoHorario(item.hora) >= minutosAgora)
-        .map(horario => ({ origem: saida.origem, destino: saida.destino, horario }))));
+    const horariosDisponiveis = rotas.flatMap(rota => (rota.saindo_de || [])
+        .filter((_, index) => index === sentidoFavorito)
+        .flatMap(saida => (saida.horarios || []).map(horario => ({
+            origem: saida.origem,
+            destino: saida.destino,
+            horario,
+            minutos: minutosDoHorario(horario.hora)
+        }))));
+    const emTransito = horariosDisponiveis
+        .filter(item => item.minutos <= minutosAgora)
+        .sort((primeiro, segundo) => segundo.minutos - primeiro.minutos)[0];
+    const proximos = horariosDisponiveis
+        .filter(item => item.minutos > minutosAgora)
+        .sort((primeiro, segundo) => primeiro.minutos - segundo.minutos);
+    const horariosExibidos = emTransito ? [emTransito, ...proximos.slice(0, 2)] : proximos.slice(0, 3);
 
-    if (!proximos.length) {
+    if (!horariosExibidos.length) {
         container.innerHTML = `<p class="aviso-temporario">Não há mais horários para esta linha hoje.</p>`;
         return;
     }
 
-    proximos.sort((primeiro, segundo) => minutosDoHorario(primeiro.horario.hora) - minutosDoHorario(segundo.horario.hora));
-    container.innerHTML = proximos.slice(0, 3).map(item => `
-        <div class="next-schedule-item">
+    container.innerHTML = horariosExibidos.map((item, index) => `
+        <div class="next-schedule-item ${index === 0 && item.minutos <= minutosAgora ? 'is-in-transit' : ''}">
             <strong>${item.horario.hora}</strong>
             <span>
+                ${index === 0 && item.minutos <= minutosAgora ? '<b>Em trânsito</b>' : '<b>Próximo horário</b>'}
                 ${item.horario.observacao ? `<small>[${item.horario.observacao}]</small>` : ''}
             </span>
         </div>
