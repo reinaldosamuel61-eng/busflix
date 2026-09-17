@@ -40,7 +40,7 @@
             </div>
             <label class="field-label" for="nome-usuario">Como podemos chamar você?</label>
             <div class="name-setting">
-                <input type="text" id="nome-usuario" maxlength="30" placeholder="Digite seu nome">
+                <input type="text" id="nome-usuario" maxlength="24" placeholder="Digite seu nome">
             </div>
             <div class="settings-block">
                 <label class="field-label" for="favorite-line-select">Linha favorita</label>
@@ -56,11 +56,30 @@
         </div>
     </section>
 
+    <div class="settings-toast" id="settings-toast" role="status" aria-live="polite" hidden>
+        <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+        <span>Alterações salvas com sucesso</span>
+    </div>
+
+    <div class="welcome-modal" id="welcome-modal" role="dialog" aria-modal="true" aria-labelledby="welcome-modal-title" hidden>
+        <div class="welcome-modal-backdrop"></div>
+        <div class="welcome-modal-card">
+            <span class="page-kicker"><i class="fa-solid fa-bus"></i> Busflix</span>
+            <h2 id="welcome-modal-title">Bem-vindo ao Busflix</h2>
+            <p>Consulte horários e informações do transporte público de Caçapava.</p>
+            <button type="button" class="settings-save" id="continuar-apresentacao">Começar</button>
+        </div>
+    </div>
+
     <!-- Conteúdo Principal -->
     <main class="home-content">
         <div class="page active" id="home-page">
         <section class="greeting" aria-live="polite">
             <p id="saudacao-usuario">Olá! <span aria-hidden="true">👋</span></p>
+            <div class="weather-summary" id="weather-summary" aria-live="polite" aria-label="Previsão do tempo em Caçapava">
+                <i class="fa-solid fa-cloud-sun weather-icon" aria-hidden="true"></i>
+                <span class="weather-copy"><strong>Caçapava-SP</strong><small>Carregando clima...</small><time class="weather-time"><i class="fa-regular fa-clock" aria-hidden="true"></i> --:--</time></span>
+            </div>
         </section>
         <!-- Cartão Azul (Carrossel / Parceiros) -->
         <section class="partner-card">
@@ -79,11 +98,6 @@
                 <span class="dot active"></span>
                 <span class="dot"></span>
             </div>
-        </section>
-
-        <!-- Cartão de Boas-vindas -->
-        <section class="welcome-card">
-            <p>Bem-vindo ao <strong>Busflix</strong>. Consulte horários e informações do transporte público de Caçapava.</p>
         </section>
 
         <div class="favorite-line-trigger" aria-live="polite">
@@ -127,6 +141,16 @@
                 <h2 id="avisos-title">Avisos e Novidades</h2>
                 <p>Toque em uma imagem para ver os detalhes.</p>
             </div>
+            <section class="partner-card avisos-banner">
+                <div class="card-body">
+                    <button class="nav-arrow left" aria-label="Banner anterior"><i class="fa-solid fa-chevron-left"></i></button>
+                    <a class="home-banner-link" href="#avisos" data-page="avisos">
+                        <img class="home-banner-image" src="" alt="Banner de avisos">
+                    </a>
+                    <button class="nav-arrow right" aria-label="Próximo banner"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+                <div class="carousel-dots"></div>
+            </section>
             <div class="gallery-grid" id="gallery-grid"></div>
         </section>
 

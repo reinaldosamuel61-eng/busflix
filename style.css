@@ -21,7 +21,7 @@ body {
     position: fixed;
     transition: opacity .35s ease, visibility .35s ease;
     visibility: visible;
-    z-index: 50;
+    z-index: 1100;
 }
 
 .app-splash.is-hidden {
@@ -36,6 +36,8 @@ body {
     object-fit: contain;
     width: auto;
 }
+
+.splash-active .bottom-nav { opacity: 0; pointer-events: none; visibility: hidden; }
 
 /* Cabeçalho */
 .top-bar {
@@ -97,14 +99,85 @@ body {
 }
 
 .greeting {
+    align-items: center;
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
     margin: 2px 0 16px;
 }
 
 .greeting p {
     color: #1A2B49;
+    flex: 1 1 auto;
     font-size: 21px;
     font-weight: 700;
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
+.greeting-period, .greeting-name { white-space: nowrap; }
+.greeting-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.greeting.is-long-name .greeting-name { display: block; }
+
+.weather-summary {
+    align-items: center;
+    color: #1A2B49;
+    display: flex;
+    flex: 0 0 142px;
+    gap: 7px;
+    min-width: 142px;
+    text-align: right;
+}
+.weather-icon { color: #F59E0B; font-size: 20px; }
+.weather-copy { display: grid; gap: 2px; }
+.weather-copy strong { font-size: 15px; white-space: nowrap; }
+.weather-copy small, .weather-time { color: #667085; font-size: 10px; white-space: nowrap; }
+.weather-time { font-style: normal; }
+.weather-time i { margin-right: 2px; }
+
+.settings-toast {
+    align-items: center;
+    background: #1A2B49;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 8px 20px rgba(26, 43, 73, .22);
+    color: #FFFFFF;
+    display: flex;
+    font-size: 13px;
+    gap: 8px;
+    left: 50%;
+    max-width: calc(100% - 32px);
+    padding: 12px 16px;
+    position: fixed;
+    top: 0;
+    transform: translate(-50%, -110%);
+    transition: transform .3s ease;
+    z-index: 2200;
+}
+.settings-toast.is-visible { transform: translate(-50%, 0); }
+.settings-toast i { color: #8BD3A8; }
+
+.welcome-modal[hidden] { display: none; }
+.welcome-modal {
+    align-items: center;
+    display: flex;
+    inset: 0;
+    justify-content: center;
+    padding: 20px;
+    position: fixed;
+    z-index: 2100;
+}
+.welcome-modal-backdrop { background: rgba(10, 14, 13, .62); inset: 0; position: fixed; }
+.welcome-modal-card {
+    background: #FFFFFF;
+    border-radius: 14px;
+    box-shadow: 0 16px 40px rgba(26, 43, 73, .24);
+    max-width: 420px;
+    padding: 26px 22px 22px;
+    position: relative;
+    width: 100%;
+}
+.welcome-modal-card h2 { color: #1A2B49; font-size: 24px; margin-top: 8px; }
+.welcome-modal-card p { color: #475467; font-size: 14px; line-height: 1.55; margin-top: 14px; }
+.welcome-modal-card .settings-save { margin-top: 22px; }
 
 .page {
     display: none;
@@ -868,6 +941,8 @@ body {
 .dark-mode .page-heading p, .dark-mode .about-copy, .dark-mode .favorite-line-trigger-copy small, .dark-mode .modal-description { color: #AABBB2; }
 .dark-mode .next-schedules-title { color: #E7ECE9; }
 .dark-mode .greeting p { color: #E7ECE9; }
+.dark-mode .weather-summary { color: #E7ECE9; }
+.dark-mode .weather-copy small { color: #AABBB2; }
 .dark-mode .favorite-line-trigger, .dark-mode .favorite-line-option { border-color: #385046; }
 .dark-mode .favorite-line-option.active { background: #203F30; border-color: #5CBF83; color: #D7F5E1; }
 .dark-mode .welcome-card p { color: #C1CEC7; }
@@ -882,6 +957,9 @@ body {
 .dark-mode .settings-actions, .dark-mode .settings-block { border-top-color: #385046; }
 .dark-mode .settings-action.active { background: #203F30; border-color: #5CBF83; color: #D7F5E1; }
 .dark-mode .settings-save { background: #2A9F63; color: #0F2118; }
+.dark-mode .welcome-modal-card { background: #1B2924; }
+.dark-mode .welcome-modal-card h2 { color: #E7ECE9; }
+.dark-mode .welcome-modal-card p { color: #C1CEC7; }
 .dark-mode .contact-form { background: #1B2924; border-color: #385046; }
 .dark-mode .contact-form h3 { color: #E7ECE9; }
 .dark-mode .contact-form input, .dark-mode .contact-form textarea { background: #1B2924; border-color: #385046; color: #E7ECE9; }
@@ -1175,3 +1253,5 @@ body {
 @media (max-width: 420px) {
     .settings-actions { grid-template-columns: 1fr; }
 }
+
+.avisos-banner { margin: 0 0 20px; }

@@ -80,9 +80,12 @@ document.addEventListener("DOMContentLoaded", () => {
     configurarAcessibilidade();
     configurarInstalacaoPwa();
     configurarTelaAbertura();
+    configurarApresentacaoInicial();
     configurarConfiguracoes();
     configurarContatoDesenvolvedor();
     renderizarSaudacao();
+    carregarClima();
+    atualizarRelogioClima();
     window.setInterval(() => {
         const tipoDia = obterTipoDiaAtual();
         if (tipoDia !== tipoDiaAtual) {
@@ -97,6 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
         renderizarProximosHorarios();
         renderizarHorariosSelecionados();
     }, 60000);
+    window.setInterval(atualizarRelogioClima, 60000);
 });
 
 function configurarContatoDesenvolvedor() {
@@ -215,10 +219,24 @@ function configurarConfiguracoes() {
     document.addEventListener('keydown', evento => {
         if (evento.key === 'Escape' && !painel.hidden) fecharConfiguracoes();
     });
-    if (!localStorage.getItem('busflix-nome')) {
+    if (!localStorage.getItem('busflix-nome') && localStorage.getItem('busflix-apresentacao-vista') === 'true') {
         painel.hidden = false;
         document.body.classList.add('modal-open');
     }
+}
+
+function configurarApresentacaoInicial() {
+    const modal = document.getElementById('welcome-modal');
+    const continuar = document.getElementById('continuar-apresentacao');
+    if (!modal || !continuar || localStorage.getItem('busflix-apresentacao-vista') === 'true') return;
+
+    modal.hidden = false;
+    document.body.classList.add('modal-open');
+    continuar.addEventListener('click', () => {
+        localStorage.setItem('busflix-apresentacao-vista', 'true');
+        modal.hidden = true;
+        abrirConfiguracoes('nome-usuario');
+    });
 }
 
 function abrirConfiguracoes(campoFoco = 'nome-usuario') {
@@ -248,6 +266,7 @@ function salvarNomeUsuario() {
     localStorage.setItem('busflix-nome', valor);
     renderizarSaudacao();
     fecharConfiguracoes();
+    mostrarConfirmacaoConfiguracoes();
 }
 
 function renderizarSaudacao() {
@@ -256,16 +275,85 @@ function renderizarSaudacao() {
     const hora = new Date().getHours();
     const periodo = hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite';
     const nome = localStorage.getItem('busflix-nome');
-    saudacao.innerHTML = `${periodo}${nome ? `, ${nome}` : ''}! <span aria-hidden="true">👋</span>`;
+    saudacao.classList.toggle('is-long-name', Boolean(nome && nome.length > 12));
+    saudacao.innerHTML = `<span class="greeting-period">${periodo}${nome ? ',' : ''}</span>${nome ? ` <span class="greeting-name">${nome}!</span>` : '!'} <span aria-hidden="true">👋</span>`;
+}
+
+async function carregarClima() {
+    const clima = document.getElementById('weather-summary');
+    if (!clima) return;
+    try {
+        const resposta = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-23.1003&longitude=-45.7069&current=temperature_2m,weather_code&timezone=America%2FSao_Paulo');
+        if (!resposta.ok) throw new Error('Falha ao consultar o clima');
+        const dados = await resposta.json();
+        const agora = new Date();
+        const temperatura = Math.round(dados.current.temperature_2m);
+        const descricao = descreverClima(dados.current.weather_code);
+        const horario = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        clima.querySelector('.weather-icon').className = `fa-solid ${iconeClima(dados.current.weather_code, agora.getHours())} weather-icon`;
+        clima.querySelector('strong').textContent = 'Caçapava-SP';
+        clima.querySelector('small').textContent = `${temperatura}°C · ${descricao}`;
+        clima.querySelector('.weather-time').innerHTML = `<i class="fa-regular fa-clock" aria-hidden="true"></i> ${horario}`;
+        clima.setAttribute('aria-label', `Clima em Caçapava-SP: ${temperatura} graus, ${descricao}, atualizado às ${horario}`);
+    } catch (erro) {
+        clima.querySelector('strong').textContent = 'Caçapava-SP';
+        clima.querySelector('small').textContent = 'Clima indisponível';
+        clima.querySelector('.weather-time').innerHTML = '<i class="fa-regular fa-clock" aria-hidden="true"></i> --:--';
+        clima.setAttribute('aria-label', 'Clima em Caçapava indisponível');
+    }
+}
+
+function atualizarRelogioClima() {
+    const relogio = document.querySelector('.weather-time');
+    if (!relogio) return;
+    const horario = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    relogio.innerHTML = `<i class="fa-regular fa-clock" aria-hidden="true"></i> ${horario}`;
+}
+
+function descreverClima(codigo) {
+    if (codigo === 0) return 'Céu limpo';
+    if ([1, 2, 3].includes(codigo)) return 'Parcialmente nublado';
+    if ([45, 48].includes(codigo)) return 'Névoa';
+    if ([51, 53, 55, 56, 57].includes(codigo)) return 'Garoa';
+    if ([61, 63, 65, 66, 67, 80, 81, 82].includes(codigo)) return 'Chuva';
+    if ([71, 73, 75, 77, 85, 86].includes(codigo)) return 'Neve';
+    if ([95, 96, 99].includes(codigo)) return 'Trovoada';
+    return 'Condição variável';
+}
+
+function iconeClima(codigo, hora = new Date().getHours()) {
+    const noite = hora < 6 || hora >= 18;
+    if (codigo === 0) return noite ? 'fa-moon' : 'fa-sun';
+    if ([1, 2, 3].includes(codigo)) return noite ? 'fa-cloud-moon' : 'fa-cloud-sun';
+    if ([45, 48].includes(codigo)) return 'fa-smog';
+    if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(codigo)) return 'fa-cloud-rain';
+    if ([71, 73, 75, 77, 85, 86].includes(codigo)) return 'fa-snowflake';
+    if ([95, 96, 99].includes(codigo)) return 'fa-cloud-bolt';
+    return noite ? 'fa-moon' : 'fa-cloud';
+}
+
+function mostrarConfirmacaoConfiguracoes() {
+    const aviso = document.getElementById('settings-toast');
+    if (!aviso) return;
+    aviso.hidden = false;
+    aviso.classList.remove('is-visible');
+    window.clearTimeout(mostrarConfirmacaoConfiguracoes.timer);
+    requestAnimationFrame(() => aviso.classList.add('is-visible'));
+    mostrarConfirmacaoConfiguracoes.timer = window.setTimeout(() => {
+        aviso.classList.remove('is-visible');
+        window.setTimeout(() => { aviso.hidden = true; }, 300);
+    }, 2800);
 }
 
 function configurarTelaAbertura() {
     const tela = document.getElementById('app-splash');
     const video = document.getElementById('splash-video');
     if (!tela || !video) return;
+    document.body.classList.add('splash-active');
 
     const fechar = () => {
         tela.classList.add('is-hidden');
+        document.body.classList.remove('splash-active');
         window.setTimeout(() => tela.remove(), 350);
     };
     video.addEventListener('ended', fechar, { once: true });
@@ -365,13 +453,13 @@ async function desativarCacheNoAmbienteLocal() {
 // Estas funções apenas LEEM a lista bannersHome e desenham na tela.
 // Para mudar o conteúdo dos banners, edite bannersHome lá em cima — não mexa aqui.
 function configurarCarrossel() {
-    const btnEsq = document.querySelector('.nav-arrow.left');
-    const btnDir = document.querySelector('.nav-arrow.right');
+    const btnsEsq = document.querySelectorAll('.nav-arrow.left');
+    const btnsDir = document.querySelectorAll('.nav-arrow.right');
 
     // Só adiciona os eventos se os botões existirem na tela
-    if (btnEsq && btnDir) {
-        btnEsq.addEventListener('click', () => mudarSlide(-1));
-        btnDir.addEventListener('click', () => mudarSlide(1));
+    if (btnsEsq.length && btnsDir.length) {
+        btnsEsq.forEach(botao => botao.addEventListener('click', () => mudarSlide(-1)));
+        btnsDir.forEach(botao => botao.addEventListener('click', () => mudarSlide(1)));
         renderizarSlide();
         iniciarRotacaoAutomatica();
     }
@@ -398,18 +486,14 @@ function mudarSlide(direcao) {
 // Pega o banner da posição atual (slideAtual) e atualiza a imagem/link/bolinhas na tela.
 function renderizarSlide() {
     const dados = bannersHome[slideAtual];
-    const imagem = document.querySelector('.home-banner-image');
-    const link = document.querySelector('.home-banner-link');
-    if (imagem && link) {
+    document.querySelectorAll('.home-banner-image').forEach(imagem => {
         imagem.src = dados.imagem;
         imagem.alt = dados.alt;
-        link.href = dados.link;
-    }
+    });
+    document.querySelectorAll('.home-banner-link').forEach(link => { link.href = dados.link; });
 
-    const areaDots = document.querySelector('.carousel-dots');
-    if (areaDots) {
-        areaDots.innerHTML = ''; 
-        
+    document.querySelectorAll('.carousel-dots').forEach(areaDots => {
+        areaDots.innerHTML = '';
         bannersHome.forEach((_, index) => {
             const dot = document.createElement('span');
             dot.classList.add('dot');
@@ -418,7 +502,7 @@ function renderizarSlide() {
             }
             areaDots.appendChild(dot);
         });
-    }
+    });
 }
 
 
