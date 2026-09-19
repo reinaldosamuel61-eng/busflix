@@ -288,7 +288,7 @@ function fecharConfiguracoes() {
 function salvarNomeUsuario() {
     const nome = document.getElementById('nome-usuario');
     if (!nome) return;
-    const valor = nome.value.trim();
+    const valor = nome.value.trim().slice(0, 17);
     if (!valor) {
         nome.focus();
         return;
@@ -1168,7 +1168,7 @@ function renderizarProximosHorarios() {
     const proximos = horariosDisponiveis
         .filter(item => item.minutos > minutosAgora)
         .sort((primeiro, segundo) => primeiro.minutos - segundo.minutos);
-    const horariosExibidos = emTransito ? [emTransito, ...proximos.slice(0, 2)] : proximos.slice(0, 3);
+    const horariosExibidos = emTransito ? [emTransito, ...proximos] : proximos;
 
     if (!horariosExibidos.length) {
         container.innerHTML = `<p class="aviso-temporario">Não há mais horários para esta linha hoje.</p>`;

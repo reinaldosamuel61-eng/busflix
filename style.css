@@ -52,7 +52,7 @@ body {
     right: 0;
     top: 0;
     z-index: 15;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    box-shadow: none;
 }
 
 .header-actions {
@@ -804,7 +804,13 @@ body {
     width: 30px;
 }
 
-.next-schedules { margin: 14px 0 20px; }
+.next-schedules {
+    margin: 14px 0 20px;
+    max-height: 174px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+}
 .next-schedules-title {
     color: #1A2B49;
     display: block;
