@@ -67,6 +67,22 @@ let paginaAtual = 'home';
 let inicioArrastePaginaX = 0;
 let inicioArrastePaginaY = 0;
 let retornoHomeArmado = false;
+let configuracoesOriginais = null;
+
+function abrirModalComHistorico(modal) {
+    modal.hidden = false;
+    document.body.classList.add('modal-open');
+    window.history.pushState({ modal: modal.id, pagina: paginaAtual }, '', window.location.href);
+}
+
+function fecharModalComHistorico(modal) {
+    modal.hidden = true;
+    if (!document.querySelector('[role="dialog"]:not([hidden])')) document.body.classList.remove('modal-open');
+}
+
+function obterModalAberto() {
+    return [...document.querySelectorAll('[role="dialog"]')].reverse().find(modal => !modal.hidden);
+}
 
 // ==========================================
 // 2. INICIALIZAÇÃO DO APP
@@ -119,33 +135,29 @@ function configurarContatoDesenvolvedor() {
     if (!modal || !abrir || !fechar || !backdrop || !formulario || !status) return;
 
     const fecharModal = () => {
-        modal.hidden = true;
-        document.body.classList.remove('modal-open');
+        fecharModalComHistorico(modal);
     };
     const fecharModalEmpresa = elemento => {
         elemento.hidden = true;
         if (avisoEmpresa.hidden && contatosViacao.hidden && modal.hidden) document.body.classList.remove('modal-open');
     };
     abrirContatoEmpresa?.addEventListener('click', () => {
-        avisoEmpresa.hidden = false;
-        document.body.classList.add('modal-open');
+        abrirModalComHistorico(avisoEmpresa);
     });
     abrirContatosViacao?.addEventListener('click', () => {
         avisoEmpresa.hidden = true;
-        contatosViacao.hidden = false;
+        abrirModalComHistorico(contatosViacao);
     });
     abrirDesenvolvedorDoAviso?.addEventListener('click', () => {
         avisoEmpresa.hidden = true;
-        modal.hidden = false;
-        document.body.classList.add('modal-open');
+        abrirModalComHistorico(modal);
         document.getElementById('contato-nome')?.focus();
     });
     document.querySelectorAll('[data-company-modal-close]').forEach(botao => {
         botao.addEventListener('click', () => fecharModalEmpresa(botao.closest('.company-modal')));
     });
     abrir.addEventListener('click', () => {
-        modal.hidden = false;
-        document.body.classList.add('modal-open');
+        abrirModalComHistorico(modal);
         document.getElementById('contato-nome')?.focus();
     });
     fechar.addEventListener('click', fecharModal);
@@ -206,13 +218,6 @@ function configurarConfiguracoes() {
     seletorLinhaFavorita?.addEventListener('change', () => {
         linhaFavorita = seletorLinhaFavorita.value;
         sentidoFavorito = 0;
-        if (linhaFavorita) {
-            localStorage.setItem('busflix-linha-favorita', linhaFavorita);
-            localStorage.setItem('busflix-sentido-favorito', String(sentidoFavorito));
-        } else {
-            localStorage.removeItem('busflix-linha-favorita');
-            localStorage.removeItem('busflix-sentido-favorito');
-        }
         renderizarSentidosFavorita();
         renderizarProximosHorarios();
     });
@@ -221,8 +226,7 @@ function configurarConfiguracoes() {
         if (evento.key === 'Escape' && !painel.hidden) fecharConfiguracoes();
     });
     if (!localStorage.getItem('busflix-nome') && localStorage.getItem('busflix-apresentacao-vista') === 'true') {
-        painel.hidden = false;
-        document.body.classList.add('modal-open');
+        abrirConfiguracoes('nome-usuario');
     }
 }
 
@@ -231,20 +235,35 @@ function configurarApresentacaoInicial() {
     const continuar = document.getElementById('continuar-apresentacao');
     if (!modal || !continuar || localStorage.getItem('busflix-apresentacao-vista') === 'true') return;
 
-    modal.hidden = false;
-    document.body.classList.add('modal-open');
+    abrirModalComHistorico(modal);
     continuar.addEventListener('click', () => {
         localStorage.setItem('busflix-apresentacao-vista', 'true');
-        modal.hidden = true;
+        fecharModalComHistorico(modal);
         abrirConfiguracoes('nome-usuario');
     });
 }
 
 function abrirConfiguracoes(campoFoco = 'nome-usuario') {
     const painel = document.getElementById('settings-panel');
+    const nome = document.getElementById('nome-usuario');
+    const seletorLinhaFavorita = document.getElementById('favorite-line-select');
     if (!painel) return;
-    painel.hidden = false;
-    document.body.classList.add('modal-open');
+    configuracoesOriginais = {
+        nome: localStorage.getItem('busflix-nome') || '',
+        linha: localStorage.getItem('busflix-linha-favorita') || '',
+        sentido: Number(localStorage.getItem('busflix-sentido-favorito')) || 0,
+        tema: localStorage.getItem('busflix-tema') === 'escuro',
+        fonte: localStorage.getItem('busflix-fonte') === 'grande'
+    };
+    nome.value = configuracoesOriginais.nome;
+    seletorLinhaFavorita.value = configuracoesOriginais.linha;
+    linhaFavorita = configuracoesOriginais.linha;
+    sentidoFavorito = configuracoesOriginais.sentido;
+    document.body.classList.toggle('dark-mode', configuracoesOriginais.tema);
+    document.body.classList.toggle('large-font', configuracoesOriginais.fonte);
+    atualizarControleTema(configuracoesOriginais.tema);
+    atualizarControleFonte(configuracoesOriginais.fonte);
+    abrirModalComHistorico(painel);
     const campo = document.getElementById(campoFoco);
     campo?.focus();
 }
@@ -252,8 +271,18 @@ function abrirConfiguracoes(campoFoco = 'nome-usuario') {
 function fecharConfiguracoes() {
     const painel = document.getElementById('settings-panel');
     if (!painel) return;
-    painel.hidden = true;
-    document.body.classList.remove('modal-open');
+    if (configuracoesOriginais) {
+        linhaFavorita = configuracoesOriginais.linha;
+        sentidoFavorito = configuracoesOriginais.sentido;
+        document.body.classList.toggle('dark-mode', configuracoesOriginais.tema);
+        document.body.classList.toggle('large-font', configuracoesOriginais.fonte);
+        atualizarControleTema(configuracoesOriginais.tema);
+        atualizarControleFonte(configuracoesOriginais.fonte);
+        renderizarSentidosFavorita();
+        renderizarProximosHorarios();
+    }
+    configuracoesOriginais = null;
+    fecharModalComHistorico(painel);
 }
 
 function salvarNomeUsuario() {
@@ -264,8 +293,20 @@ function salvarNomeUsuario() {
         nome.focus();
         return;
     }
+    const tema = document.body.classList.contains('dark-mode');
+    const fonte = document.body.classList.contains('large-font');
     localStorage.setItem('busflix-nome', valor);
+    if (linhaFavorita) {
+        localStorage.setItem('busflix-linha-favorita', linhaFavorita);
+        localStorage.setItem('busflix-sentido-favorito', String(sentidoFavorito));
+    } else {
+        localStorage.removeItem('busflix-linha-favorita');
+        localStorage.removeItem('busflix-sentido-favorito');
+    }
+    localStorage.setItem('busflix-tema', tema ? 'escuro' : 'claro');
+    localStorage.setItem('busflix-fonte', fonte ? 'grande' : 'normal');
     renderizarSaudacao();
+    configuracoesOriginais = null;
     fecharConfiguracoes();
     mostrarConfirmacaoConfiguracoes();
 }
@@ -312,13 +353,11 @@ function configurarModalClima() {
     const backdrop = document.getElementById('weather-modal-backdrop');
     if (!resumo || !modal || !fechar || !backdrop) return;
     const abrir = () => {
-        modal.hidden = false;
-        document.body.classList.add('modal-open');
+        abrirModalComHistorico(modal);
         renderizarPrevisaoDetalhada();
     };
     const fecharModal = () => {
-        modal.hidden = true;
-        document.body.classList.remove('modal-open');
+        fecharModalComHistorico(modal);
     };
     resumo.addEventListener('click', abrir);
     resumo.addEventListener('keydown', evento => { if (evento.key === 'Enter' || evento.key === ' ') { evento.preventDefault(); abrir(); } });
@@ -629,16 +668,14 @@ function configurarNavegacao() {
     const mostrarConfirmacaoSaida = () => {
         const modal = document.getElementById('exit-confirmation');
         if (!modal) return;
-        modal.hidden = false;
-        document.body.classList.add('modal-open');
+        abrirModalComHistorico(modal);
         document.getElementById('confirmar-saida')?.focus();
     };
 
     const fecharConfirmacaoSaida = () => {
         const modal = document.getElementById('exit-confirmation');
         if (!modal) return;
-        modal.hidden = true;
-        document.body.classList.remove('modal-open');
+        fecharModalComHistorico(modal);
     };
 
     document.getElementById('cancelar-saida')?.addEventListener('click', () => {
@@ -662,6 +699,13 @@ function configurarNavegacao() {
     });
 
     window.addEventListener('popstate', () => {
+        const modalAberto = obterModalAberto();
+        if (modalAberto) {
+            if (modalAberto.id === 'settings-panel') fecharConfiguracoes();
+            else fecharModalComHistorico(modalAberto);
+            return;
+        }
+
         if (paginaAtual !== 'home') {
             navegarPara('home', true);
             window.history.pushState({ pagina: 'home', guard: true }, '', '#home');
@@ -777,8 +821,7 @@ function abrirGaleriaModal(index) {
 
     const modal = document.getElementById('gallery-modal');
     if (!modal) return;
-    modal.hidden = false;
-    document.body.classList.add('modal-open');
+    abrirModalComHistorico(modal);
     // O requestAnimationFrame garante que o navegador aplique "hidden = false" antes de
     // ligar a classe que dispara a transição de entrada (senão o fade não anima).
     requestAnimationFrame(() => modal.classList.add('is-open'));
@@ -814,7 +857,7 @@ function fecharGaleriaModal() {
     const modal = document.getElementById('gallery-modal');
     if (!modal) return;
     modal.classList.remove('is-open');
-    document.body.classList.remove('modal-open');
+    if (!obterModalAberto() || obterModalAberto() === modal) document.body.classList.remove('modal-open');
     window.setTimeout(() => { modal.hidden = true; }, 220);
 }
 

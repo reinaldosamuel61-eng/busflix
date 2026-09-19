@@ -123,13 +123,16 @@ body {
     color: #1A2B49;
     display: flex;
     flex: 0 0 142px;
+    appearance: none;
     gap: 7px;
     min-width: 142px;
     text-align: right;
     border: 0;
     cursor: pointer;
     padding: 0;
+    background: transparent;
 }
+.weather-summary:focus-visible { border-radius: 8px; outline: 2px solid #008A45; outline-offset: 4px; }
 .weather-icon { color: #F59E0B; font-size: 20px; }
 .weather-summary .weather-composite { flex: 0 0 28px; }
 .weather-copy { display: grid; gap: 2px; }
