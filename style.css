@@ -126,13 +126,50 @@ body {
     gap: 7px;
     min-width: 142px;
     text-align: right;
+    border: 0;
+    cursor: pointer;
+    padding: 0;
 }
 .weather-icon { color: #F59E0B; font-size: 20px; }
+.weather-summary .weather-composite { flex: 0 0 28px; }
 .weather-copy { display: grid; gap: 2px; }
 .weather-copy strong { font-size: 15px; white-space: nowrap; }
 .weather-copy small, .weather-time { color: #667085; font-size: 10px; white-space: nowrap; }
 .weather-time { font-style: normal; }
 .weather-time i { margin-right: 2px; }
+
+.weather-modal[hidden] { display: none; }
+.weather-modal { align-items: center; display: flex; inset: 0; justify-content: center; padding: 20px; position: fixed; z-index: 2100; }
+.weather-modal-backdrop { background: rgba(10, 14, 13, .68); inset: 0; position: fixed; }
+.weather-modal-card { background: #FFFFFF; border-radius: 14px; box-shadow: 0 16px 40px rgba(26, 43, 73, .24); max-height: calc(100vh - 40px); max-width: 560px; overflow-y: auto; padding: 22px; position: relative; width: 100%; }
+.weather-modal-header { align-items: flex-start; display: flex; justify-content: space-between; }
+.weather-modal-header h2 { color: #1A2B49; font-size: 23px; margin-top: 6px; }
+.weather-modal-updated, .weather-loading { color: #667085; font-size: 12px; margin-top: 8px; }
+.weather-section-title { color: #1A2B49; font-size: 14px; margin: 22px 0 10px; }
+.hourly-forecast { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; }
+.hourly-item { align-items: center; background: #F2F4F7; border-radius: 8px; display: grid; flex: 0 0 66px; gap: 8px; justify-items: center; padding: 10px 5px; }
+.hourly-item time { color: #667085; font-size: 11px; }
+.hourly-item i, .daily-item i { font-size: 19px; }
+.hourly-item.is-current { background: #DCEFE3; box-shadow: 0 0 0 2px #008A45; transform: translateY(-2px); }
+.hourly-item.is-current time { color: #006B36; font-weight: 800; }
+.weather-composite { align-items: center; display: inline-flex; height: 21px; justify-content: center; position: relative; width: 28px; }
+.weather-composite i:first-child { font-size: 16px; position: absolute; right: 8px; top: 0; }
+.weather-composite i:last-child { bottom: 0; font-size: 16px; left: 5px; position: absolute; }
+.weather-color-sun { color: #F59E0B; }
+.weather-color-moon { color: #F59E0B; }
+.weather-color-cloud { color: #7B8794; }
+.weather-color-fog { color: #94A3B8; }
+.weather-color-rain { color: #2583C7; }
+.weather-color-snow { color: #67B7D1; }
+.weather-color-storm { color: #7654A6; }
+.weather-color-lightning { color: #F59E0B; }
+.hourly-item strong { color: #1A2B49; font-size: 14px; }
+.daily-forecast { display: grid; gap: 7px; }
+.daily-item { align-items: center; background: #F2F4F7; border-radius: 8px; display: grid; grid-template-columns: 1fr 32px 70px; padding: 10px 12px; }
+.daily-item strong { color: #344054; font-size: 13px; text-transform: capitalize; }
+.daily-item i { text-align: center; }
+.daily-item span { color: #1A2B49; font-size: 13px; text-align: right; }
+.daily-item small { color: #98A2B3; font-size: 12px; }
 
 .settings-toast {
     align-items: center;
@@ -943,6 +980,12 @@ body {
 .dark-mode .greeting p { color: #E7ECE9; }
 .dark-mode .weather-summary { color: #E7ECE9; }
 .dark-mode .weather-copy small { color: #AABBB2; }
+.dark-mode .weather-modal-card { background: #1B2924; }
+.dark-mode .weather-modal-header h2, .dark-mode .weather-section-title, .dark-mode .hourly-item strong, .dark-mode .daily-item span { color: #E7ECE9; }
+.dark-mode .weather-modal-updated, .dark-mode .weather-loading, .dark-mode .hourly-item time { color: #AABBB2; }
+.dark-mode .hourly-item, .dark-mode .daily-item { background: #20332B; }
+.dark-mode .hourly-item.is-current { background: #28533D; box-shadow: 0 0 0 2px #8BD3A8; }
+.dark-mode .daily-item strong { color: #D7F5E1; }
 .dark-mode .favorite-line-trigger, .dark-mode .favorite-line-option { border-color: #385046; }
 .dark-mode .favorite-line-option.active { background: #203F30; border-color: #5CBF83; color: #D7F5E1; }
 .dark-mode .welcome-card p { color: #C1CEC7; }

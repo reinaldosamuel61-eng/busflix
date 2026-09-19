@@ -80,6 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
     configurarAcessibilidade();
     configurarInstalacaoPwa();
     configurarTelaAbertura();
+    configurarModalClima();
     configurarApresentacaoInicial();
     configurarConfiguracoes();
     configurarContatoDesenvolvedor();
@@ -283,14 +284,15 @@ async function carregarClima() {
     const clima = document.getElementById('weather-summary');
     if (!clima) return;
     try {
-        const resposta = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-23.1003&longitude=-45.7069&current=temperature_2m,weather_code&timezone=America%2FSao_Paulo');
+        const resposta = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-23.1003&longitude=-45.7069&current=temperature_2m,weather_code&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&forecast_days=7&timezone=America%2FSao_Paulo');
         if (!resposta.ok) throw new Error('Falha ao consultar o clima');
         const dados = await resposta.json();
+        window.dadosClima = dados;
         const agora = new Date();
         const temperatura = Math.round(dados.current.temperature_2m);
         const descricao = descreverClima(dados.current.weather_code);
         const horario = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-        clima.querySelector('.weather-icon').className = `fa-solid ${iconeClima(dados.current.weather_code, agora.getHours())} weather-icon`;
+        clima.querySelector('.weather-icon').outerHTML = iconeClimaMarkup(dados.current.weather_code, agora.getHours());
         clima.querySelector('strong').textContent = 'Caçapava-SP';
         clima.querySelector('small').textContent = `${temperatura}°C · ${descricao}`;
         clima.querySelector('.weather-time').innerHTML = `<i class="fa-regular fa-clock" aria-hidden="true"></i> ${horario}`;
@@ -301,6 +303,53 @@ async function carregarClima() {
         clima.querySelector('.weather-time').innerHTML = '<i class="fa-regular fa-clock" aria-hidden="true"></i> --:--';
         clima.setAttribute('aria-label', 'Clima em Caçapava indisponível');
     }
+}
+
+function configurarModalClima() {
+    const resumo = document.getElementById('weather-summary');
+    const modal = document.getElementById('weather-modal');
+    const fechar = document.getElementById('fechar-previsao');
+    const backdrop = document.getElementById('weather-modal-backdrop');
+    if (!resumo || !modal || !fechar || !backdrop) return;
+    const abrir = () => {
+        modal.hidden = false;
+        document.body.classList.add('modal-open');
+        renderizarPrevisaoDetalhada();
+    };
+    const fecharModal = () => {
+        modal.hidden = true;
+        document.body.classList.remove('modal-open');
+    };
+    resumo.addEventListener('click', abrir);
+    resumo.addEventListener('keydown', evento => { if (evento.key === 'Enter' || evento.key === ' ') { evento.preventDefault(); abrir(); } });
+    fechar.addEventListener('click', fecharModal);
+    backdrop.addEventListener('click', fecharModal);
+    document.addEventListener('keydown', evento => { if (evento.key === 'Escape' && !modal.hidden) fecharModal(); });
+}
+
+function renderizarPrevisaoDetalhada() {
+    const dados = window.dadosClima;
+    const horas = document.getElementById('hourly-forecast');
+    const dias = document.getElementById('daily-forecast');
+    if (!dados?.hourly || !dados?.daily || !horas || !dias) return;
+    const agora = new Date();
+    const dataHoje = `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, '0')}-${String(agora.getDate()).padStart(2, '0')}`;
+    const inicioHoje = dados.hourly.time.findIndex(item => item.startsWith(dataHoje));
+    const inicio = inicioHoje < 0 ? 0 : inicioHoje;
+    horas.innerHTML = dados.hourly.time.slice(inicio, inicio + 24).map((tempo, indice) => {
+        const posicao = inicio + indice;
+        const data = new Date(tempo);
+        const codigo = dados.hourly.weather_code[posicao];
+        const horaAtual = data.getHours() === agora.getHours();
+        return `<div class="hourly-item${horaAtual ? ' is-current' : ''}"><time>${horaAtual ? 'Agora' : `${data.getHours().toString().padStart(2, '0')}:00`}</time>${iconeClimaMarkup(codigo, data.getHours())}<strong>${Math.round(dados.hourly.temperature_2m[posicao])}°</strong></div>`;
+    }).join('');
+    dias.innerHTML = dados.daily.time.map((tempo, indice) => {
+        const data = new Date(`${tempo}T12:00:00`);
+        const nomeDia = indice === 0 ? 'Hoje' : data.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '');
+        const codigo = dados.daily.weather_code[indice];
+        return `<div class="daily-item"><strong>${nomeDia}</strong>${iconeClimaMarkup(codigo, 12)}<span>${Math.round(dados.daily.temperature_2m_max[indice])}° <small>${Math.round(dados.daily.temperature_2m_min[indice])}°</small></span></div>`;
+    }).join('');
+    document.getElementById('weather-modal-updated').textContent = `Atualizado às ${agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
 }
 
 function atualizarRelogioClima() {
@@ -330,6 +379,28 @@ function iconeClima(codigo, hora = new Date().getHours()) {
     if ([71, 73, 75, 77, 85, 86].includes(codigo)) return 'fa-snowflake';
     if ([95, 96, 99].includes(codigo)) return 'fa-cloud-bolt';
     return noite ? 'fa-moon' : 'fa-cloud';
+}
+
+function iconeClimaMarkup(codigo, hora) {
+    const noite = hora < 6 || hora >= 18;
+    if ([1, 2, 3].includes(codigo)) {
+        return `<span class="weather-composite weather-icon"><i class="fa-solid ${noite ? 'fa-moon' : 'fa-sun'} weather-color-sun"></i><i class="fa-solid fa-cloud weather-color-cloud"></i></span>`;
+    }
+    if ([95, 96, 99].includes(codigo)) {
+        return '<span class="weather-composite weather-icon"><i class="fa-solid fa-cloud weather-color-rain"></i><i class="fa-solid fa-bolt weather-color-lightning"></i></span>';
+    }
+    return `<i class="fa-solid ${iconeClima(codigo, hora)} ${classeCorClima(codigo, hora)} weather-icon"></i>`;
+}
+
+function classeCorClima(codigo, hora = new Date().getHours()) {
+    const noite = hora < 6 || hora >= 18;
+    if (codigo === 0) return 'weather-color-sun';
+    if ([1, 2, 3].includes(codigo)) return 'weather-color-cloud';
+    if ([45, 48].includes(codigo)) return 'weather-color-fog';
+    if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(codigo)) return 'weather-color-rain';
+    if ([71, 73, 75, 77, 85, 86].includes(codigo)) return 'weather-color-snow';
+    if ([95, 96, 99].includes(codigo)) return 'weather-color-rain';
+    return noite ? 'weather-color-sun' : 'weather-color-cloud';
 }
 
 function mostrarConfirmacaoConfiguracoes() {

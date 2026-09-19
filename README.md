@@ -32,10 +32,16 @@ O projeto foi desenvolvido como parte do **Projeto Integrador (PI) do curso Téc
 - Filtro por dias úteis, sábados e domingos/feriados.
 - Seleção do sentido de viagem e ponto de saída.
 - Área de próximos horários da linha favorita.
+- Identificação do último ônibus iniciado como **Em trânsito**, mantendo-o visível junto dos dois próximos horários.
 - Escolha e persistência de linha favorita.
 - Saudação personalizada com o nome do usuário.
+- Modal de boas-vindas no primeiro acesso antes da configuração do nome e da linha favorita.
+- Previsão atual de Caçapava-SP com temperatura, condição, horário de atualização e ícones dinâmicos de dia/noite.
+- Modal de previsão com as 24 horas do dia atual, destaque para a hora corrente e previsão dos próximos 7 dias.
 - Carrossel de banners na página inicial.
+- Carrossel de banners também na página Avisos, sincronizado com a Home.
 - Galeria de avisos e novidades com modal de detalhes.
+- Fluxo de contato em duas etapas: aviso de independência do app e contatos da Viação Cidade Natureza.
 - Navegação por menu inferior e gesto de deslizar entre páginas.
 - Botão voltar do dispositivo com retorno para a Home.
 - Confirmação de saída após duas tentativas de voltar na Home.
@@ -45,6 +51,7 @@ O projeto foi desenvolvido como parte do **Projeto Integrador (PI) do curso Téc
 - Aumento do tamanho da fonte.
 - Instalação como Progressive Web App (PWA).
 - Funcionamento offline dos arquivos principais após o primeiro carregamento, quando instalado ou servido por um ambiente compatível.
+- Atualização automática dos arquivos do app, com verificação ao abrir e ao retornar para a aba, sem depender de `Ctrl + F5`.
 
 ## Tecnologias
 
@@ -183,15 +190,33 @@ Campos obrigatórios:
 
 Para trocar o endpoint, altere o atributo `action` do formulário em `index.html`.
 
+### Contatos da empresa
+
+Os contatos institucionais ficam atrás do botão **Fale com a empresa**. Antes de exibi-los, o app informa que o Busflix é um projeto independente e orienta assuntos relacionados ao aplicativo para o desenvolvedor. O usuário pode então continuar para os contatos da Viação Cidade Natureza ou abrir o formulário do desenvolvedor.
+
+## Previsão do tempo
+
+O resumo do clima fica ao lado da saudação na Home e usa a localização fixa de **Caçapava-SP**. Ao clicar em qualquer área do resumo, abre-se um modal com:
+
+- previsão hora a hora de `00:00` a `23:00`;
+- destaque da hora atual até o fim daquela hora;
+- temperatura e ícone de cada horário;
+- previsão dos próximos 7 dias;
+- horário da última atualização.
+
+Os dados são consultados pela API pública [Open-Meteo](https://open-meteo.com/), usando as coordenadas de Caçapava. Os ícones mudam conforme o período e a condição: sol ou lua, nuvens, chuva, neve, névoa e trovoadas.
+
 ## PWA e cache
 
 O arquivo `manifest.json` define o nome, ícone, cores e modo de exibição standalone do aplicativo.
 
-O `sw.js` realiza o cache dos arquivos principais e permite que a aplicação carregue recursos essenciais mesmo sem conexão, depois do primeiro acesso bem-sucedido.
+O `sw.js` realiza o cache dos arquivos principais e permite que a aplicação carregue recursos essenciais mesmo sem conexão, depois do primeiro acesso bem-sucedido. Para os arquivos do app, a rede tem prioridade e o cache funciona como fallback offline.
+
+O Service Worker verifica novas versões ao abrir o app e quando a aba volta a ficar visível. Quando uma nova versão é instalada, a página é recarregada automaticamente uma única vez para aplicar as alterações.
 
 Durante o desenvolvimento em `localhost`, o próprio Busflix remove registros e caches antigos do Service Worker para evitar que alterações fiquem presas em uma versão anterior.
 
-Se uma versão antiga continuar aparecendo em produção, atualize o cache do navegador ou altere `CACHE_NAME` em `sw.js` para publicar uma nova versão.
+Ao publicar alterações, mantenha o app em HTTPS ou em um servidor local compatível com Service Workers. Arquivos abertos diretamente por `file://` não permitem esse mecanismo de atualização automática.
 
 ## Navegação e acessibilidade
 

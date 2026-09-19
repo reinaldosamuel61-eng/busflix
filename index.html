@@ -76,10 +76,10 @@
         <div class="page active" id="home-page">
         <section class="greeting" aria-live="polite">
             <p id="saudacao-usuario">Olá! <span aria-hidden="true">👋</span></p>
-            <div class="weather-summary" id="weather-summary" aria-live="polite" aria-label="Previsão do tempo em Caçapava">
+            <button type="button" class="weather-summary" id="weather-summary" aria-live="polite" aria-label="Abrir previsão do tempo em Caçapava">
                 <i class="fa-solid fa-cloud-sun weather-icon" aria-hidden="true"></i>
                 <span class="weather-copy"><strong>Caçapava-SP</strong><small>Carregando clima...</small><time class="weather-time"><i class="fa-regular fa-clock" aria-hidden="true"></i> --:--</time></span>
-            </div>
+            </button>
         </section>
         <!-- Cartão Azul (Carrossel / Parceiros) -->
         <section class="partner-card">
@@ -173,6 +173,24 @@
         </section>
 
     </main>
+
+    <div class="weather-modal" id="weather-modal" role="dialog" aria-modal="true" aria-labelledby="weather-modal-title" hidden>
+        <div class="weather-modal-backdrop" id="weather-modal-backdrop"></div>
+        <div class="weather-modal-card">
+            <div class="weather-modal-header">
+                <div>
+                    <span class="page-kicker"><i class="fa-solid fa-location-dot"></i> Caçapava-SP</span>
+                    <h2 id="weather-modal-title">Previsão do tempo</h2>
+                </div>
+                <button type="button" class="modal-close" id="fechar-previsao" aria-label="Fechar previsão"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p class="weather-modal-updated" id="weather-modal-updated">Atualizando...</p>
+            <h3 class="weather-section-title">Hoje, hora a hora</h3>
+            <div class="hourly-forecast" id="hourly-forecast"><p class="weather-loading">Carregando previsão...</p></div>
+            <h3 class="weather-section-title">Previsão da semana</h3>
+            <div class="daily-forecast" id="daily-forecast"><p class="weather-loading">Carregando previsão...</p></div>
+        </div>
+    </div>
 
     <!-- Barra de Navegação Inferior -->
     <nav class="bottom-nav">
