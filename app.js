@@ -338,6 +338,7 @@ async function carregarClima() {
         clima.querySelector('small').textContent = `${temperatura}°C · ${descricao}`;
         clima.querySelector('.weather-time').innerHTML = `<i class="fa-regular fa-clock" aria-hidden="true"></i> ${horario}`;
         clima.setAttribute('aria-label', `Clima em Caçapava-SP: ${temperatura} graus, ${descricao}, atualizado às ${horario}`);
+        renderizarProximosHorarios();
     } catch (erro) {
         clima.querySelector('strong').textContent = 'Caçapava-SP';
         clima.querySelector('small').textContent = 'Clima indisponível';
@@ -374,12 +375,13 @@ function renderizarPrevisaoDetalhada() {
     const agora = new Date();
     const dataHoje = `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, '0')}-${String(agora.getDate()).padStart(2, '0')}`;
     const inicioHoje = dados.hourly.time.findIndex(item => item.startsWith(dataHoje));
-    const inicio = inicioHoje < 0 ? 0 : inicioHoje;
-    horas.innerHTML = dados.hourly.time.slice(inicio, inicio + 24).map((tempo, indice) => {
+    const inicioDoDia = inicioHoje < 0 ? 0 : inicioHoje;
+    const inicio = inicioDoDia + agora.getHours();
+    horas.innerHTML = dados.hourly.time.slice(inicio, inicioDoDia + 24).map((tempo, indice) => {
         const posicao = inicio + indice;
         const data = new Date(tempo);
         const codigo = dados.hourly.weather_code[posicao];
-        const horaAtual = data.getHours() === agora.getHours();
+        const horaAtual = indice === 0;
         return `<div class="hourly-item${horaAtual ? ' is-current' : ''}"><time>${horaAtual ? 'Agora' : `${data.getHours().toString().padStart(2, '0')}:00`}</time>${iconeClimaMarkup(codigo, data.getHours())}<strong>${Math.round(dados.hourly.temperature_2m[posicao])}°</strong></div>`;
     }).join('');
     dias.innerHTML = dados.daily.time.map((tempo, indice) => {
@@ -1128,6 +1130,18 @@ function minutosDoHorario(hora) {
     return horas * 60 + minutos;
 }
 
+function obterClimaParaHorario(hora) {
+    const dados = window.dadosClima;
+    if (!dados?.hourly) return '';
+    const [horas] = hora.split(':').map(Number);
+    const agora = new Date();
+    const dataHoje = `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, '0')}-${String(agora.getDate()).padStart(2, '0')}`;
+    const posicao = dados.hourly.time.findIndex(item => item === `${dataHoje}T${String(horas).padStart(2, '0')}:00`);
+    if (posicao < 0) return '';
+    const temperatura = Math.round(dados.hourly.temperature_2m[posicao]);
+    return `<span class="schedule-weather">${iconeClimaMarkup(dados.hourly.weather_code[posicao], horas)}<b>${temperatura}°</b></span>`;
+}
+
 function renderizarProximosHorarios() {
     const container = document.getElementById('proximos-horarios');
     if (!container) return;
@@ -1165,9 +1179,10 @@ function renderizarProximosHorarios() {
         <div class="next-schedule-item ${index === 0 && item.minutos <= minutosAgora ? 'is-in-transit' : ''}">
             <strong>${item.horario.hora}</strong>
             <span>
-                ${index === 0 && item.minutos <= minutosAgora ? '<b>Em trânsito</b>' : '<b>Próximo horário</b>'}
+                ${index === 0 && item.minutos <= minutosAgora ? '<b class="schedule-status">Em trânsito</b>' : '<b class="schedule-status">Próximo horário</b>'}
                 ${item.horario.observacao ? `<small>[${item.horario.observacao}]</small>` : ''}
             </span>
+            ${obterClimaParaHorario(item.horario.hora)}
         </div>
     `).join('');
 }

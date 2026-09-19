@@ -99,19 +99,13 @@ body {
 }
 
 .greeting {
-    align-items: center;
-    display: flex;
-    gap: 12px;
-    justify-content: space-between;
     margin: 2px 0 16px;
 }
 
 .greeting p {
     color: #1A2B49;
-    flex: 1 1 auto;
     font-size: 21px;
     font-weight: 700;
-    min-width: 0;
     overflow-wrap: anywhere;
 }
 .greeting-period, .greeting-name { white-space: nowrap; }
@@ -120,24 +114,26 @@ body {
 
 .weather-summary {
     align-items: center;
-    color: #1A2B49;
-    display: flex;
-    flex: 0 0 142px;
     appearance: none;
-    gap: 7px;
-    min-width: 142px;
-    text-align: right;
-    border: 0;
+    background: #FFFFFF;
+    border: 1px solid #EAECF0;
+    border-radius: 10px;
+    color: #1A2B49;
     cursor: pointer;
-    padding: 0;
-    background: transparent;
+    display: flex;
+    gap: 10px;
+    margin: 4px 0 20px;
+    padding: 14px 16px;
+    text-align: left;
+    width: 100%;
 }
-.weather-summary:focus-visible { border-radius: 8px; outline: 2px solid #008A45; outline-offset: 4px; }
-.weather-icon { color: #F59E0B; font-size: 20px; }
+.weather-summary:focus-visible { outline: 2px solid #008A45; outline-offset: 2px; }
+.weather-icon { color: #F59E0B; font-size: 22px; }
 .weather-summary .weather-composite { flex: 0 0 28px; }
-.weather-copy { display: grid; gap: 2px; }
+.weather-copy { display: grid; flex: 1; gap: 2px; }
 .weather-copy strong { font-size: 15px; white-space: nowrap; }
-.weather-copy small, .weather-time { color: #667085; font-size: 10px; white-space: nowrap; }
+.weather-copy small, .weather-time { color: #667085; font-size: 11px; white-space: nowrap; }
+.weather-summary-arrow { color: #98A2B3; font-size: 13px; }
 .weather-time { font-style: normal; }
 .weather-time i { margin-right: 2px; }
 
@@ -925,18 +921,29 @@ body {
     min-width: 58px;
 }
 
-.next-schedule-item span {
+.next-schedule-item > span:not(.schedule-weather) {
     display: grid;
+    flex: 1;
     gap: 3px;
 }
 
 .next-schedule-item b { color: #344054; font-size: 12px; }
 .next-schedule-item small { color: #667085; font-size: 11px; }
 
-.next-schedule-item.is-in-transit > strong,
-.next-schedule-item.is-in-transit b { color: #D97706; }
+.schedule-weather {
+    align-items: center;
+    color: #667085;
+    display: flex;
+    flex: 0 0 auto;
+    gap: 5px;
+}
+.schedule-weather i, .schedule-weather .weather-composite { font-size: 16px; }
+.schedule-weather b { color: #344054; font-size: 13px; }
 
-.next-schedule-item.is-in-transit b { animation: transit-pulse 1.2s ease-in-out infinite; }
+.next-schedule-item.is-in-transit > strong,
+.next-schedule-item.is-in-transit .schedule-status { color: #D97706; }
+
+.next-schedule-item.is-in-transit .schedule-status { animation: transit-pulse 1.2s ease-in-out infinite; }
 
 @keyframes transit-pulse {
     0%, 100% { opacity: 1; }
@@ -944,7 +951,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .next-schedule-item.is-in-transit b { animation: none; }
+    .next-schedule-item.is-in-transit .schedule-status { animation: none; }
 }
 
 .large-font { font-size: 112%; zoom: 1.08; }
@@ -981,7 +988,7 @@ body {
 .dark-mode .page-heading p, .dark-mode .about-copy, .dark-mode .favorite-line-trigger-copy small, .dark-mode .modal-description { color: #AABBB2; }
 .dark-mode .next-schedules-title { color: #E7ECE9; }
 .dark-mode .greeting p { color: #E7ECE9; }
-.dark-mode .weather-summary { color: #E7ECE9; }
+.dark-mode .weather-summary { background: #1B2924; border-color: #385046; color: #E7ECE9; }
 .dark-mode .weather-copy small { color: #AABBB2; }
 .dark-mode .weather-modal-card { background: #1B2924; }
 .dark-mode .weather-modal-header h2, .dark-mode .weather-section-title, .dark-mode .hourly-item strong, .dark-mode .daily-item span { color: #E7ECE9; }
