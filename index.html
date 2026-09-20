@@ -61,6 +61,16 @@
         <span>Alterações salvas com sucesso</span>
     </div>
 
+    <div class="offline-modal" id="offline-modal" role="dialog" aria-modal="true" aria-labelledby="offline-modal-title" hidden>
+        <div class="offline-modal-backdrop" id="offline-modal-backdrop"></div>
+        <div class="offline-modal-card">
+            <span class="offline-modal-icon" aria-hidden="true"><i class="fa-solid fa-wifi"></i></span>
+            <h2 id="offline-modal-title">Você está sem internet</h2>
+            <p>Algumas funções podem não funcionar até que a conexão seja restabelecida.</p>
+            <button type="button" class="settings-save" id="fechar-aviso-offline">Entendi</button>
+        </div>
+    </div>
+
     <div class="welcome-modal" id="welcome-modal" role="dialog" aria-modal="true" aria-labelledby="welcome-modal-title" hidden>
         <div class="welcome-modal-backdrop"></div>
         <div class="welcome-modal-card">

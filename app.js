@@ -95,6 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
     configurarAcoesFavoritaHome();
     configurarAcessibilidade();
     configurarInstalacaoPwa();
+    configurarAvisoSemInternet();
     configurarTelaAbertura();
     configurarModalClima();
     configurarApresentacaoInicial();
@@ -119,6 +120,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 60000);
     window.setInterval(atualizarRelogioClima, 60000);
 });
+
+function configurarAvisoSemInternet() {
+    const modal = document.getElementById('offline-modal');
+    const fechar = document.getElementById('fechar-aviso-offline');
+    const backdrop = document.getElementById('offline-modal-backdrop');
+    if (!modal || !fechar || !backdrop) return;
+
+    const abrir = () => abrirModalComHistorico(modal);
+    const fecharModal = () => fecharModalComHistorico(modal);
+    fechar.addEventListener('click', fecharModal);
+    backdrop.addEventListener('click', fecharModal);
+    window.addEventListener('offline', abrir);
+    window.addEventListener('online', fecharModal);
+    if (!navigator.onLine) abrir();
+}
 
 function configurarContatoDesenvolvedor() {
     const avisoEmpresa = document.getElementById('company-disclaimer-modal');
