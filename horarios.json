@@ -2,6 +2,9 @@
   {
     "linha": "Padre Marcelo x Vila Velha",
     "tipo_dia": "dias_uteis",
+    "valor_passagem": "R$ 4,20",
+    "tempo_viagem": "1 hora",
+    "tempo_viagem_minutos": 60,
     "saindo_de": [{
       "origem": "Padre Marcelo / Paiol / Favorino",
       "destino": "Vila Velha I / Vila Velha II / Germana",
@@ -84,6 +87,9 @@
   {
     "linha": "Padre Marcelo x Vila Velha",
     "tipo_dia": "sabados",
+    "valor_passagem": "R$ 4,20",
+    "tempo_viagem": "1 hora",
+    "tempo_viagem_minutos": 60,
     "saindo_de": [{
       "origem": "Padre Marcelo / Favorino",
       "destino": "Vila Velha I / Vila Velha II / Germana",
@@ -134,6 +140,9 @@
   {
     "linha": "Padre Marcelo x Vila Velha",
     "tipo_dia": "domingos_feriados",
+    "valor_passagem": "R$ 4,20",
+    "tempo_viagem": "1 hora",
+    "tempo_viagem_minutos": 60,
     "saindo_de": [{
       "origem": "Padre Marcelo",
       "destino": "Vila Velha I / Vila Velha II",
@@ -168,18 +177,27 @@
   {
     "linha": "Eldorado x Rodoviária",
     "tipo_dia": "dias_uteis",
+    "valor_passagem": "R$ 4,20",
+    "tempo_viagem": "1 hora",
+    "tempo_viagem_minutos": 60,
     "saindo_de": [],
     "observacoes": []
   },
   {
     "linha": "Eldorado x Rodoviária",
     "tipo_dia": "sabados",
+    "valor_passagem": "R$ 4,20",
+    "tempo_viagem": "1 hora",
+    "tempo_viagem_minutos": 60,
     "saindo_de": [],
     "observacoes": []
   },
   {
     "linha": "Eldorado x Rodoviária",
     "tipo_dia": "domingos_feriados",
+    "valor_passagem": "R$ 4,20",
+    "tempo_viagem": "1 hora",
+    "tempo_viagem_minutos": 60,
     "saindo_de": [],
     "observacoes": []
   },
@@ -187,18 +205,27 @@
   {
     "linha": "Vila Galvão x Guadalupe",
     "tipo_dia": "dias_uteis",
+    "valor_passagem": "R$ 4,20",
+    "tempo_viagem": "1 hora",
+    "tempo_viagem_minutos": 60,
     "saindo_de": [],
     "observacoes": []
   },
   {
     "linha": "Vila Galvão x Guadalupe",
     "tipo_dia": "sabados",
+    "valor_passagem": "R$ 4,20",
+    "tempo_viagem": "1 hora",
+    "tempo_viagem_minutos": 60,
     "saindo_de": [],
     "observacoes": []
   },
   {
     "linha": "Vila Galvão x Guadalupe",
     "tipo_dia": "domingos_feriados",
+    "valor_passagem": "R$ 4,20",
+    "tempo_viagem": "1 hora",
+    "tempo_viagem_minutos": 60,
     "saindo_de": [],
     "observacoes": []
   }

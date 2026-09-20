@@ -1106,7 +1106,13 @@ function alternarSentidoFavorito() {
 
 function atualizarLabelFavorita(sentido) {
     const label = document.getElementById('linha-favorita-label');
+    const tarifa = document.getElementById('valor-passagem');
+    const rota = dadosGerais.find(item => item.linha === linhaFavorita && item.tipo_dia === obterTipoDiaAtual()) || dadosGerais.find(item => item.linha === linhaFavorita);
     if (label) label.textContent = linhaFavorita || 'Escolher linha favorita';
+    if (tarifa) {
+        tarifa.hidden = !rota?.valor_passagem;
+        tarifa.querySelector('strong').textContent = rota?.valor_passagem || '';
+    }
     const subtitulo = document.querySelector('.favorite-line-trigger-copy small');
     if (subtitulo) subtitulo.innerHTML = sentido
         ? `Origem: ${sentido.origem}<br>Destino: ${sentido.destino}`
@@ -1154,6 +1160,7 @@ function renderizarProximosHorarios() {
     const rotas = dadosGerais.filter(item => item.linha === linhaFavorita && item.tipo_dia === tipoDia);
     const agora = new Date();
     const minutosAgora = agora.getHours() * 60 + agora.getMinutes();
+    const tempoViagem = rotas[0]?.tempo_viagem_minutos || 60;
     const horariosDisponiveis = rotas.flatMap(rota => (rota.saindo_de || [])
         .filter((_, index) => index === sentidoFavorito)
         .flatMap(saida => (saida.horarios || []).map(horario => ({
@@ -1163,12 +1170,16 @@ function renderizarProximosHorarios() {
             minutos: minutosDoHorario(horario.hora)
         }))));
     const emTransito = horariosDisponiveis
-        .filter(item => item.minutos <= minutosAgora)
-        .sort((primeiro, segundo) => segundo.minutos - primeiro.minutos)[0];
+        .filter(item => item.minutos <= minutosAgora && minutosAgora < item.minutos + tempoViagem)
+        .sort((primeiro, segundo) => primeiro.minutos - segundo.minutos)
+        .map(item => ({
+            ...item,
+            progresso: Math.min(100, Math.round(((minutosAgora - item.minutos) / tempoViagem) * 100))
+        }));
     const proximos = horariosDisponiveis
         .filter(item => item.minutos > minutosAgora)
         .sort((primeiro, segundo) => primeiro.minutos - segundo.minutos);
-    const horariosExibidos = emTransito ? [emTransito, ...proximos] : proximos;
+    const horariosExibidos = [...emTransito, ...proximos];
 
     if (!horariosExibidos.length) {
         container.innerHTML = `<p class="aviso-temporario">Não há mais horários para esta linha hoje.</p>`;
@@ -1176,13 +1187,14 @@ function renderizarProximosHorarios() {
     }
 
     container.innerHTML = horariosExibidos.map((item, index) => `
-        <div class="next-schedule-item ${index === 0 && item.minutos <= minutosAgora ? 'is-in-transit' : ''}">
+        <div class="next-schedule-item ${item.progresso !== undefined ? 'is-in-transit' : ''}">
             <strong>${item.horario.hora}</strong>
             <span>
-                ${index === 0 && item.minutos <= minutosAgora ? '<b class="schedule-status">Em trânsito</b>' : '<b class="schedule-status">Próximo horário</b>'}
+                ${item.progresso !== undefined ? '<b class="schedule-status"><i class="fa-solid fa-bus-simple" aria-hidden="true"></i> A caminho</b>' : '<b class="schedule-status">Próximo horário</b>'}
                 ${item.horario.observacao ? `<small>[${item.horario.observacao}]</small>` : ''}
             </span>
             ${obterClimaParaHorario(item.horario.hora)}
+            ${item.progresso !== undefined ? `<div class="trip-progress" aria-label="Viagem em ${item.progresso}% do percurso"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><span><span style="width: ${item.progresso}%"></span></span><i class="fa-solid fa-flag-checkered" aria-hidden="true"></i></div>` : ''}
         </div>
     `).join('');
 }

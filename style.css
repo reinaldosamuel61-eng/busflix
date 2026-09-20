@@ -792,6 +792,18 @@ body {
     font-size: 11px;
 }
 
+.favorite-line-fare {
+    align-items: center;
+    color: #006B36;
+    display: flex;
+    flex: 0 0 auto;
+    font-size: 12px;
+    gap: 5px;
+    margin-left: auto;
+}
+.favorite-line-fare i { color: #008A45; }
+.favorite-line-fare[hidden] { display: none; }
+
 .favorite-line-icon {
     align-items: center;
     background: #FFF4D6;
@@ -917,8 +929,10 @@ body {
     align-items: center;
     border-top: 1px solid #EAECF0;
     display: flex;
+    flex-wrap: wrap;
     gap: 12px;
     padding: 12px 0 4px;
+    position: relative;
 }
 
 .next-schedule-item > strong {
@@ -935,6 +949,7 @@ body {
 
 .next-schedule-item b { color: #344054; font-size: 12px; }
 .next-schedule-item small { color: #667085; font-size: 11px; }
+.schedule-status i { margin-right: 4px; }
 
 .schedule-weather {
     align-items: center;
@@ -950,6 +965,19 @@ body {
 .next-schedule-item.is-in-transit .schedule-status { color: #D97706; }
 
 .next-schedule-item.is-in-transit .schedule-status { animation: transit-pulse 1.2s ease-in-out infinite; }
+
+.trip-progress {
+    align-items: center;
+    display: flex;
+    flex-basis: 100%;
+    gap: 7px;
+    margin: -3px 0 5px 70px;
+}
+.trip-progress > i:first-child { color: #008A45; font-size: 12px; }
+.trip-progress > i:last-child { color: #D97706; font-size: 12px; }
+.trip-progress > span { background: #E4E7EC; border-radius: 999px; height: 5px; overflow: hidden; }
+.trip-progress > span { flex: 1; }
+.trip-progress > span > span { background: #008A45; border-radius: inherit; display: block; height: 100%; transition: width .4s ease; }
 
 @keyframes transit-pulse {
     0%, 100% { opacity: 1; }
@@ -994,6 +1022,8 @@ body {
 .dark-mode .page-heading p, .dark-mode .about-copy, .dark-mode .favorite-line-trigger-copy small, .dark-mode .modal-description { color: #AABBB2; }
 .dark-mode .next-schedules-title { color: #E7ECE9; }
 .dark-mode .greeting p { color: #E7ECE9; }
+.dark-mode .favorite-line-fare { color: #8BD3A8; }
+.dark-mode .trip-progress > span { background: #385046; }
 .dark-mode .weather-summary { background: #1B2924; border-color: #385046; color: #E7ECE9; }
 .dark-mode .weather-copy small { color: #AABBB2; }
 .dark-mode .weather-modal-card { background: #1B2924; }

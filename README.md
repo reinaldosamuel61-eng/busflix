@@ -31,12 +31,14 @@ O projeto foi desenvolvido como parte do **Projeto Integrador (PI) do curso Téc
 - Consulta de horários por linha.
 - Filtro por dias úteis, sábados e domingos/feriados.
 - Seleção do sentido de viagem e ponto de saída.
-- Área de próximos horários da linha favorita.
-- Identificação do último ônibus iniciado como **Em trânsito**, mantendo-o visível junto dos dois próximos horários.
+- Área de próximos horários da linha favorita, com rolagem interna para consultar todos os horários restantes do dia.
+- Identificação de cada viagem **A caminho** enquanto durar o tempo de viagem, com ícone de ônibus, barra de progresso entre partida e chegada e suporte a viagens simultâneas.
+- Ícone e temperatura previstos para cada horário exibido na Home.
+- Tarifa da passagem exibida ao lado da linha favorita.
 - Escolha e persistência de linha favorita.
 - Saudação personalizada com o nome do usuário.
 - Modal de boas-vindas no primeiro acesso antes da configuração do nome e da linha favorita.
-- Previsão atual de Caçapava-SP com temperatura, condição, horário de atualização e ícones dinâmicos de dia/noite.
+- Previsão atual de Caçapava-SP com temperatura, condição, horário de atualização e ícones dinâmicos de dia/noite, exibida abaixo da saudação e acima do banner.
 - Modal de previsão com as 24 horas do dia atual, destaque para a hora corrente e previsão dos próximos 7 dias.
 - Carrossel de banners na página inicial.
 - Carrossel de banners também na página Avisos, sincronizado com a Home.
@@ -118,6 +120,9 @@ Os horários ficam em `horarios.json`. Cada registro representa uma linha e um t
 {
   "linha": "Nome da linha",
   "tipo_dia": "dias_uteis",
+  "valor_passagem": "R$ 4,20",
+  "tempo_viagem": "1 hora",
+  "tempo_viagem_minutos": 60,
   "saindo_de": [
     {
       "origem": "Ponto de origem",
@@ -141,6 +146,8 @@ Valores aceitos para `tipo_dia`:
 - `domingos_feriados`
 
 Ao adicionar ou alterar horários, mantenha o JSON válido e preserve esses nomes de campos para que a aplicação consiga renderizar os dados.
+
+Os campos `valor_passagem`, `tempo_viagem` e `tempo_viagem_minutos` pertencem à rota. O valor em minutos controla a barra de progresso da viagem: uma partida permanece como **A caminho** até completar essa duração. Caso outra partida comece antes da anterior terminar, as duas viagens aparecem simultaneamente com seus próprios progressos.
 
 ### Banners da Home
 
