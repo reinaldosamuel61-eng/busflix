@@ -93,6 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
     configurarCarrossel(); // Inicia o carrossel junto com o resto do site
     configurarGaleria();
     configurarAcoesFavoritaHome();
+    configurarFaq();
     configurarAcessibilidade();
     configurarInstalacaoPwa();
     configurarAvisoSemInternet();
@@ -120,6 +121,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 60000);
     window.setInterval(atualizarRelogioClima, 60000);
 });
+
+function configurarFaq() {
+    const faq = document.querySelector('.faq-section');
+    if (!faq) return;
+    faq.querySelectorAll('.faq-item').forEach(item => {
+        item.addEventListener('toggle', () => {
+            if (!item.open) return;
+            faq.querySelectorAll('.faq-item[open]').forEach(outroItem => {
+                if (outroItem !== item) outroItem.open = false;
+            });
+        });
+    });
+}
 
 function configurarAvisoSemInternet() {
     const modal = document.getElementById('offline-modal');

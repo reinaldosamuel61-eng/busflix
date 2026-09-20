@@ -25,6 +25,7 @@
         <span class="logo-icon"><i class="fa-solid fa-bus"></i></span>
         <h1 class="logo-text">BUSFLIX</h1>
         <div class="header-actions">
+            <button type="button" class="header-action header-help" data-page="sobre" aria-label="Abrir perguntas frequentes" title="Perguntas frequentes">?</button>
             <button type="button" class="header-action" id="abrir-configuracoes" aria-label="Abrir configurações" title="Configurações"><i class="fa-solid fa-gear"></i></button>
         </div>
     </header>
@@ -182,6 +183,61 @@
             <p class="about-copy">O Busflix é um projeto acadêmico desenvolvido como parte do Projeto Integrador (PI) do curso Técnico em Administração do SENAC.</p>
             <p class="about-copy">Este projeto não possui fins lucrativos e não tem vínculo com a empresa de ônibus Viação Cidade Natureza.</p>
             <a class="github-button" href="https://github.com/reinaldosamuel61-eng" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github" aria-hidden="true"></i> Meu GitHub</a>
+            <section class="faq-section" aria-labelledby="faq-title">
+                <h3 id="faq-title">Perguntas Frequentes (FAQ)</h3>
+                <details class="faq-item">
+                    <summary>O que significa o status “A caminho”?</summary>
+                    <p>Significa que, de acordo com o horário oficial da tabela, o ônibus provavelmente já iniciou a viagem e saiu do ponto inicial (terminal).</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Como funciona a barra de progresso se o app não tem o GPS do ônibus?</summary>
+                    <p>O aplicativo calcula uma estimativa baseada no horário de partida e no tempo médio que a linha leva para completar a viagem. A barra mostra onde o ônibus deveria estar no trajeto caso esteja tudo correndo normalmente na rua.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>A bandeira no final da linha é o meu ponto de desembarque?</summary>
+                    <p>Não. A bandeira de chegada representa apenas o ponto final (terminal) da linha completa. Ela serve para você calcular visualmente se o ônibus já passou da metade do caminho ou se já está perto de encerrar a viagem.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Por que o aplicativo não mostra a localização exata do ônibus no mapa?</summary>
+                    <p>Somos um aplicativo independente e, por enquanto, não temos acesso aos dados de GPS em tempo real da empresa de transporte. Por isso, trabalhamos para entregar a tabela de horários mais precisa e inteligente possível.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>O aplicativo é responsável por atrasos ou mudanças de horário?</summary>
+                    <p>Não. Os dados e tabelas de horários são fornecidos pela empresa de ônibus responsável pela linha. Como somos um aplicativo independente, não temos controle sobre o trânsito, problemas mecânicos ou alterações repentinas na frota. Recomendamos chegar ao ponto com alguns minutos de antecedência.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>A previsão do tempo exibida no aplicativo é 100% exata?</summary>
+                    <p>Não, ela é apenas uma estimativa. As informações de clima são fornecidas por serviços meteorológicos parceiros e servem para você se programar. Como as condições do tempo mudam rápido, podem ocorrer variações ao longo do dia.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Qual horário devo considerar se o ônibus estiver “A caminho”?</summary>
+                    <p>Considere que o cálculo começa no ponto inicial da linha. Se você estiver em um ponto mais à frente, use a barra de progresso como estimativa e chegue com alguns minutos de antecedência.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>O que acontece se eu perder o ônibus que está “A caminho”?</summary>
+                    <p>A lista de próximos horários continua mostrando as próximas partidas disponíveis no mesmo sentido. Basta rolar a lista para consultar os demais horários do dia.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Com que frequência os dados são atualizados?</summary>
+                    <p>Os horários seguem a tabela disponibilizada pela empresa de transporte e o clima é consultado sempre que o app é aberto. Alterações operacionais da empresa podem acontecer sem aviso prévio.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Posso usar o Busflix sem internet?</summary>
+                    <p>Alguns recursos já acessados podem continuar disponíveis, mas atualizações, previsão do tempo e outras funções online podem não funcionar até a conexão voltar.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Por que o horário mostrado pode ser diferente do ônibus real?</summary>
+                    <p>O aplicativo mostra a tabela prevista. Trânsito, desvios, condições da via, problemas mecânicos e alterações na operação podem afetar o horário real de passagem.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Como alterar minha linha favorita?</summary>
+                    <p>Abra as Configurações pelo ícone de engrenagem no topo, selecione outra linha favorita e toque em Salvar.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>O valor da passagem pode mudar?</summary>
+                    <p>Sim. O valor exibido é informativo e pode ser alterado pela empresa responsável ou pelos órgãos competentes. Confirme a tarifa antes da viagem quando necessário.</p>
+                </details>
+            </section>
         </section>
 
     </main>

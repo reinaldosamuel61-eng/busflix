@@ -77,6 +77,7 @@ body {
 }
 
 .header-action:hover, .header-action.active { background: #E8F5ED; color: #008A45; }
+.header-help { font-size: 18px; font-weight: 800; }
 
 .logo-icon {
     color: #008A45;
@@ -640,6 +641,15 @@ body {
 }
 .github-button:hover { background: #12213A; }
 
+.faq-section { border-top: 1px solid #EAECF0; margin-top: 26px; padding-top: 22px; }
+.faq-section h3 { color: #1A2B49; font-size: 18px; margin-bottom: 12px; }
+.faq-item { border-bottom: 1px solid #EAECF0; }
+.faq-item summary { align-items: center; color: #344054; cursor: pointer; display: flex; font-size: 13px; font-weight: 700; line-height: 1.4; list-style: none; padding: 14px 2px; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after { color: #008A45; content: '\f078'; font-family: "Font Awesome 6 Free"; font-size: 11px; font-weight: 900; margin-left: auto; padding-left: 12px; }
+.faq-item[open] summary::after { transform: rotate(180deg); }
+.faq-item p { color: #667085; font-size: 13px; line-height: 1.55; padding: 0 2px 15px; }
+
 /* Cartão Azul (PAT) */
 .partner-card {
     background: #101614;
@@ -1058,6 +1068,9 @@ body {
 .dark-mode .settings-actions, .dark-mode .settings-block { border-top-color: #385046; }
 .dark-mode .settings-action.active { background: #203F30; border-color: #5CBF83; color: #D7F5E1; }
 .dark-mode .settings-save { background: #2A9F63; color: #0F2118; }
+.dark-mode .faq-section, .dark-mode .faq-item { border-color: #385046; }
+.dark-mode .faq-section h3, .dark-mode .faq-item summary { color: #E7ECE9; }
+.dark-mode .faq-item p { color: #C1CEC7; }
 .dark-mode .welcome-modal-card { background: #1B2924; }
 .dark-mode .welcome-modal-card h2 { color: #E7ECE9; }
 .dark-mode .welcome-modal-card p { color: #C1CEC7; }
