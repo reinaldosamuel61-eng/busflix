@@ -1178,6 +1178,10 @@ function obterClimaParaHorario(hora) {
     return `<span class="schedule-weather">${iconeClimaMarkup(dados.hourly.weather_code[posicao], horas)}<b>${temperatura}°</b></span>`;
 }
 
+function obterTempoViagem(destino, tempoPadrao) {
+    return destino?.toLowerCase().includes('rodoviária') ? 30 : tempoPadrao;
+}
+
 function renderizarProximosHorarios() {
     const container = document.getElementById('proximos-horarios');
     if (!container) return;
@@ -1190,21 +1194,22 @@ function renderizarProximosHorarios() {
     const rotas = dadosGerais.filter(item => item.linha === linhaFavorita && item.tipo_dia === tipoDia);
     const agora = new Date();
     const minutosAgora = agora.getHours() * 60 + agora.getMinutes();
-    const tempoViagem = rotas[0]?.tempo_viagem_minutos || 60;
+    const tempoViagemPadrao = rotas[0]?.tempo_viagem_minutos || 60;
     const horariosDisponiveis = rotas.flatMap(rota => (rota.saindo_de || [])
         .filter((_, index) => index === sentidoFavorito)
         .flatMap(saida => (saida.horarios || []).map(horario => ({
             origem: saida.origem,
             destino: saida.destino,
             horario,
-            minutos: minutosDoHorario(horario.hora)
+            minutos: minutosDoHorario(horario.hora),
+            tempoViagem: obterTempoViagem(saida.destino, tempoViagemPadrao)
         }))));
     const emTransito = horariosDisponiveis
-        .filter(item => item.minutos <= minutosAgora && minutosAgora < item.minutos + tempoViagem)
+        .filter(item => item.minutos <= minutosAgora && minutosAgora < item.minutos + item.tempoViagem)
         .sort((primeiro, segundo) => primeiro.minutos - segundo.minutos)
         .map(item => ({
             ...item,
-            progresso: Math.min(100, Math.round(((minutosAgora - item.minutos) / tempoViagem) * 100))
+            progresso: Math.min(100, Math.round(((minutosAgora - item.minutos) / item.tempoViagem) * 100))
         }));
     const proximos = horariosDisponiveis
         .filter(item => item.minutos > minutosAgora)

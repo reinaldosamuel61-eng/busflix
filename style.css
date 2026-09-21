@@ -8,7 +8,7 @@
 body {
     background-color: #F8F9FA;
     color: #333;
-    padding-top: 58px;
+    padding-top: 48px;
     padding-bottom: 80px; /* Espaço extra para não esconder conteúdo atrás do menu */
 }
 
@@ -44,10 +44,10 @@ body {
     align-items: center;
     background-color: #FFFFFF;
     display: flex;
-    height: 58px;
+    height: 48px;
     justify-content: flex-start;
     left: 0;
-    padding: 12px 20px;
+    padding: 6px 16px;
     position: fixed;
     right: 0;
     top: 0;
@@ -71,9 +71,9 @@ body {
     cursor: pointer;
     display: flex;
     font-size: 16px;
-    height: 34px;
+    height: 30px;
     justify-content: center;
-    width: 34px;
+    width: 30px;
 }
 
 .header-action:hover, .header-action.active { background: #E8F5ED; color: #008A45; }
@@ -81,12 +81,12 @@ body {
 
 .logo-icon {
     color: #008A45;
-    font-size: 24px;
+    font-size: 20px;
     margin-right: 5px;
 }
 
 .logo-text {
-    font-size: 22px;
+    font-size: 19px;
     font-weight: 900;
     color: #E60000;
     letter-spacing: -1px;
