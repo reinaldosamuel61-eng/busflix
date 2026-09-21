@@ -1178,8 +1178,16 @@ function obterClimaParaHorario(hora) {
     return `<span class="schedule-weather">${iconeClimaMarkup(dados.hourly.weather_code[posicao], horas)}<b>${temperatura}°</b></span>`;
 }
 
-function obterTempoViagem(destino, tempoPadrao) {
-    return destino?.toLowerCase().includes('rodoviária') ? 30 : tempoPadrao;
+function observacaoEnvolveRodoviaria(observacao) {
+    const texto = (observacao || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+    return texto.includes('rodoviaria');
+}
+
+function obterTempoViagem(observacao, tempoPadrao) {
+    return observacaoEnvolveRodoviaria(observacao) ? 30 : tempoPadrao;
 }
 
 function renderizarProximosHorarios() {
@@ -1202,7 +1210,7 @@ function renderizarProximosHorarios() {
             destino: saida.destino,
             horario,
             minutos: minutosDoHorario(horario.hora),
-            tempoViagem: obterTempoViagem(saida.destino, tempoViagemPadrao)
+            tempoViagem: obterTempoViagem(horario.observacao, tempoViagemPadrao)
         }))));
     const emTransito = horariosDisponiveis
         .filter(item => item.minutos <= minutosAgora && minutosAgora < item.minutos + item.tempoViagem)
