@@ -69,6 +69,7 @@ let inicioArrastePaginaY = 0;
 let retornoHomeArmado = false;
 let configuracoesOriginais = null;
 
+// Modal aberto ganha uma entrada no histórico para o botão voltar fechá-lo primeiro.
 function abrirModalComHistorico(modal) {
     modal.hidden = false;
     document.body.classList.add('modal-open');
@@ -88,6 +89,7 @@ function obterModalAberto() {
 // 2. INICIALIZAÇÃO DO APP
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
+    // Inicializa os módulos independentes da aplicação.
     configurarNavegacao();
     carregarHorarios();
     configurarCarrossel(); // Inicia o carrossel junto com o resto do site
@@ -105,6 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderizarSaudacao();
     carregarClima();
     atualizarRelogioClima();
+    window.setInterval(carregarClima, 900000);
     window.setInterval(() => {
         const tipoDia = obterTipoDiaAtual();
         if (tipoDia !== tipoDiaAtual) {
@@ -136,18 +139,18 @@ function configurarFaq() {
 }
 
 function configurarAvisoSemInternet() {
-    const modal = document.getElementById('offline-modal');
-    const fechar = document.getElementById('fechar-aviso-offline');
-    const backdrop = document.getElementById('offline-modal-backdrop');
-    if (!modal || !fechar || !backdrop) return;
+    const aviso = document.getElementById('offline-banner');
+    if (!aviso) return;
 
-    const abrir = () => abrirModalComHistorico(modal);
-    const fecharModal = () => fecharModalComHistorico(modal);
-    fechar.addEventListener('click', fecharModal);
-    backdrop.addEventListener('click', fecharModal);
-    window.addEventListener('offline', abrir);
-    window.addEventListener('online', fecharModal);
-    if (!navigator.onLine) abrir();
+    // A faixa não bloqueia a navegação e permanece ativa até a rede voltar.
+    const atualizarEstado = () => {
+        const offline = !navigator.onLine;
+        aviso.hidden = !offline;
+        document.body.classList.toggle('offline-active', offline);
+    };
+    window.addEventListener('offline', atualizarEstado);
+    window.addEventListener('online', atualizarEstado);
+    atualizarEstado();
 }
 
 function configurarContatoDesenvolvedor() {
@@ -355,15 +358,17 @@ async function carregarClima() {
     const clima = document.getElementById('weather-summary');
     if (!clima) return;
     try {
-        const resposta = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-23.1003&longitude=-45.7069&current=temperature_2m,weather_code&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&forecast_days=7&timezone=America%2FSao_Paulo');
+        // Caçapava fica fixa para manter a previsão contextualizada à cidade do app.
+        const resposta = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-23.1003&longitude=-45.7069&current=temperature_2m,weather_code,precipitation&hourly=temperature_2m,weather_code,precipitation&daily=weather_code,temperature_2m_max,temperature_2m_min&forecast_days=7&timezone=America%2FSao_Paulo');
         if (!resposta.ok) throw new Error('Falha ao consultar o clima');
         const dados = await resposta.json();
         window.dadosClima = dados;
         const agora = new Date();
         const temperatura = Math.round(dados.current.temperature_2m);
-        const descricao = descreverClima(dados.current.weather_code);
+        const codigoAtual = corrigirCodigoComChuvaReal(dados.current.weather_code, dados.current.precipitation);
+        const descricao = descreverClima(codigoAtual);
         const horario = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-        clima.querySelector('.weather-icon').outerHTML = iconeClimaMarkup(dados.current.weather_code, agora.getHours());
+        clima.querySelector('.weather-icon').outerHTML = iconeClimaMarkup(codigoAtual, agora.getHours());
         clima.querySelector('strong').textContent = 'Caçapava-SP';
         clima.querySelector('small').textContent = `${temperatura}°C · ${descricao}`;
         clima.querySelector('.weather-time').innerHTML = `<i class="fa-regular fa-clock" aria-hidden="true"></i> ${horario}`;
@@ -428,6 +433,13 @@ function atualizarRelogioClima() {
     if (!relogio) return;
     const horario = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     relogio.innerHTML = `<i class="fa-regular fa-clock" aria-hidden="true"></i> ${horario}`;
+}
+
+// A previsão do modelo pode dizer "nublado" mesmo já chovendo no local; a chuva medida tem prioridade.
+function corrigirCodigoComChuvaReal(codigo, precipitacaoMm) {
+    const jaEstaChovendo = typeof precipitacaoMm === 'number' && precipitacaoMm > 0;
+    const codigoIndicaSecoOuNublado = [0, 1, 2, 3, 45, 48].includes(codigo);
+    return jaEstaChovendo && codigoIndicaSecoOuNublado ? 61 : codigo;
 }
 
 function descreverClima(codigo) {
@@ -668,6 +680,7 @@ function configurarNavegacao() {
     const botoes = document.querySelectorAll('[data-page]');
     const secoes = document.querySelectorAll('.page');
 
+    // Mantém páginas, hash e histórico sincronizados.
     const exibirPagina = pagina => {
         paginaAtual = paginasNavegacao.includes(pagina) ? pagina : 'home';
         botoes.forEach(btn => btn.classList.toggle('active', btn.dataset.page === paginaAtual));
@@ -1187,6 +1200,7 @@ function observacaoEnvolveRodoviaria(observacao) {
 }
 
 function obterTempoViagem(observacao, tempoPadrao) {
+    // Rodoviária reduz a estimativa porque esse trecho é mais curto.
     return observacaoEnvolveRodoviaria(observacao) ? 30 : tempoPadrao;
 }
 
@@ -1212,6 +1226,7 @@ function renderizarProximosHorarios() {
             minutos: minutosDoHorario(horario.hora),
             tempoViagem: obterTempoViagem(horario.observacao, tempoViagemPadrao)
         }))));
+    // Uma viagem segue visível até completar sua própria duração.
     const emTransito = horariosDisponiveis
         .filter(item => item.minutos <= minutosAgora && minutosAgora < item.minutos + item.tempoViagem)
         .sort((primeiro, segundo) => primeiro.minutos - segundo.minutos)
