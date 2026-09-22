@@ -11,7 +11,7 @@
 const bannersHome = [
     { imagem: 'img/banners/avisos.png', link: '#avisos', alt: 'Aviso sobre o horário de circulação no feriado de 09 de julho' },
     { imagem: 'img/banners/avisos 2.png', link: '#avisos', alt: 'Informação do transporte público' },
-    { imagem: 'img/banners/lechef.png', link: '#avisos', alt: 'Informação do transporte público' },
+    { imagem: 'img/banners/pesquisa.png', link: 'https://forms.gle/2kg7cgZAi914dwum6', alt: 'pesquisa de opinião dos usuários' },
 
 ];
 
@@ -700,6 +700,7 @@ function configurarNavegacao() {
 
     botoes.forEach(btn => {
         btn.addEventListener('click', (e) => {
+            if (btn instanceof HTMLAnchorElement && btn.origin !== window.location.origin) return;
             e.preventDefault();
             navegarPara(btn.dataset.page);
         });
