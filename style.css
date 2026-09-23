@@ -449,7 +449,8 @@ body {
 
 .gallery-modal-copy h3 { font-size: 20px; line-height: 1.2; margin-bottom: 10px; }
 .gallery-modal-copy p { font-size: 14px; line-height: 1.5; margin-bottom: 18px; opacity: .9; }
-.gallery-modal-copy strong {
+.gallery-modal-copy strong,
+.gallery-modal-copy a {
     background: #008A45;
     border-radius: 8px;
     display: inline-block;

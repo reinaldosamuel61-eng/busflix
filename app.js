@@ -27,28 +27,32 @@ const bannersHome = [
 // Para REMOVER, basta apagar o objeto correspondente.
 const avisosGaleria = [
     {
-        titulo: 'PAT Caçapava — Vagas abertas!',
-        texto: 'O Posto de Atendimento ao Trabalhador tem novas oportunidades de emprego.',
-        link: 'patcacapava.sp.gov.br',
-        imagem: 'img/banners/avisos 2.png'
+        titulo: 'Padaria Le Chef',
+        texto: 'Venha experimentar os deliciosos pães e doces da Padaria Le Chef.',
+        link: 'Falar no WhatsApp',
+        url: 'https://wa.me/5512996307776',
+        imagem: 'img/galeria/1.png'
     },
     {
-        titulo: 'Atenção: Desvio na Linha 01',
-        texto: 'Devido a obras, os ônibus via Nova Caçapava sofrerão atrasos nesta sexta-feira.',
-        link: 'Ver detalhes',
-        imagem: 'img/banners/avisos 2.png'
+        titulo: 'Papelaria PacMan Games',
+        texto: 'Canecas personalizadas e outros itens que você precisa na Papelaria PacMan Games.',
+        link: 'Falar no WhatsApp',
+        url: 'https://wa.me/5512997826116',
+        imagem: 'img/galeria/2.png'
     },
     {
-        titulo: 'Lanchonete da Praça',
-        texto: 'Mostre que usa o Busflix e ganhe desconto no salgado e refrigerante!',
-        link: '@lanchonetedapraca',
-        imagem: 'img/banners/avisos 2.png'
+        titulo: 'GF Barbearia',
+        texto: 'Cortes de cabelo modernos e atendimento de qualidade na GF Barbearia.',
+        link: 'Falar no WhatsApp',
+        url: 'https://wa.me/5512997899591',
+        imagem: 'img/galeria/3.png'
     },
     {
-        titulo: 'Confira seu itinerário antes de sair',
-        texto: 'Consulte os horários atualizados da sua linha no Busflix.',
-        link: 'Ver horários',
-        imagem: 'img/banners/avisos 2.png'
+        titulo: 'Doceceria',
+        texto: 'Deliciosos doces e sobremesas na Doceceria.',
+        link: 'Falar no WhatsApp',
+        url: 'https://wa.me/5512996203650',
+        imagem: 'img/galeria/4.png'
     }
 ];
 
@@ -896,6 +900,9 @@ function preencherGaleriaModal() {
     titulo.textContent = item.titulo;
     texto.textContent = item.texto;
     link.textContent = item.link;
+    link.href = item.url || '';
+    link.target = item.url ? '_blank' : '';
+    link.rel = item.url ? 'noopener noreferrer' : '';
 }
 
 // Fecha o modal com uma pequena transição antes de escondê-lo de vez (display:none).
