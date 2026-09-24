@@ -98,6 +98,11 @@ function configurarOneSignal() {
                 appId: ONESIGNAL_APP_ID,
                 serviceWorkerPath: 'sw.js',
                 serviceWorkerParam: { scope: './' },
+                welcomeNotification: {
+                    title: 'Busflix',
+                    message: 'Inscrição confirmada! Você receberá avisos e novidades por aqui.',
+                    url: './#avisos'
+                },
                 promptOptions: {
                     slidedown: {
                         prompts: [{
