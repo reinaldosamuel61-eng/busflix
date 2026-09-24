@@ -61,6 +61,13 @@ const avisosGaleria = [
         link: 'Falar no WhatsApp',
         url: 'https://wa.me/5512996203650',
         imagem: 'img/galeria/4.png'
+    },
+    {
+        titulo: 'Assembléia de Deus Madureira',
+        texto: 'Fique por dentro dos cultos e atividades na nossa igreja.',
+        link: 'Ver no Instagram',
+        url: 'https://www.instagram.com/admadureiravilamedeiros/',
+        imagem: 'img/galeria/5.png'
     }
 ];
 
@@ -808,7 +815,7 @@ function configurarGaleria() {
     // Cada item da galeria é um botão com a imagem de capa (ou um fundo colorido, se não tiver imagem).
     grade.innerHTML = avisosGaleria.map((item, index) => `
         <button type="button" class="gallery-item" data-index="${index}" aria-label="Ver detalhes: ${item.titulo}">
-            ${avisoFoiVisto(item) ? '' : '<span class="gallery-item-badge"></span>'}
+            ${avisoFoiVisto(item) ? '' : '<span class="gallery-item-badge">Novo</span>'}
             <span class="gallery-item-image${item.imagem ? '' : ' gallery-item-image--vazia'}" ${item.imagem ? `style="background-image: url('${item.imagem}')"` : ''}></span>
         </button>
     `).join('');
