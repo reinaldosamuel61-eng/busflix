@@ -609,7 +609,7 @@ function configurarInstalacaoPwa() {
     window.addEventListener('beforeinstallprompt', evento => {
         evento.preventDefault();
         promptInstalacao = evento;
-        if (!localStorage.getItem('busflix-install-dismissed')) aviso.hidden = false;
+        aviso.hidden = false;
     });
     instalar.addEventListener('click', async () => {
         if (!promptInstalacao) return;
@@ -620,7 +620,6 @@ function configurarInstalacaoPwa() {
     });
     fechar.addEventListener('click', () => {
         aviso.hidden = true;
-        localStorage.setItem('busflix-install-dismissed', 'true');
     });
     window.addEventListener('appinstalled', () => { aviso.hidden = true; });
 
