@@ -326,10 +326,23 @@ body {
     display: block;
     overflow: hidden;
     padding: 0;
+    position: relative;
     transition: transform .15s ease;
 }
 
 .gallery-item:active { transform: scale(.96); }
+
+.gallery-item-badge {
+    background: #E53935;
+    border: 2px solid #101614;
+    border-radius: 50%;
+    height: 14px;
+    position: absolute;
+    right: 6px;
+    top: 6px;
+    width: 14px;
+    z-index: 1;
+}
 
 .gallery-item-image {
     aspect-ratio: 2 / 3;
@@ -1212,6 +1225,7 @@ body {
 }
 
 .nav-item {
+    position: relative;
     text-decoration: none;
     color: #9CA3AF;
     display: flex;
@@ -1221,6 +1235,24 @@ body {
     gap: 4px;
     width: 60px;
 }
+
+.nav-badge {
+    position: absolute;
+    top: -4px;
+    right: 10px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: #E53935;
+    color: #FFFFFF;
+    font-size: 10px;
+    font-weight: bold;
+    line-height: 16px;
+    text-align: center;
+}
+
+.nav-badge[hidden] { display: none; }
 
 .nav-item i {
     font-size: 20px;

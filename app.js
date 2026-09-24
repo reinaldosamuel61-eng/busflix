@@ -26,6 +26,14 @@ const bannersHome = [
 // Para ADICIONAR um aviso novo, copie um objeto e cole no final da lista.
 // Para REMOVER, basta apagar o objeto correspondente.
 const avisosGaleria = [
+    
+    {
+        titulo: 'Pesquisa sobre o BusFlix',
+        texto: 'Participe da pesquisa de opinião sobre o BusFlix e ajude a melhorar o serviço.',
+        link: 'Participar da pesquisa',
+        url: 'https://forms.gle/2kg7cgZAi914dwum6',
+        imagem: 'img/galeria/pesquisa.png'
+    },
     {
         titulo: 'Padaria Le Chef',
         texto: 'Venha experimentar os deliciosos pães e doces da Padaria Le Chef.',
@@ -800,6 +808,7 @@ function configurarGaleria() {
     // Cada item da galeria é um botão com a imagem de capa (ou um fundo colorido, se não tiver imagem).
     grade.innerHTML = avisosGaleria.map((item, index) => `
         <button type="button" class="gallery-item" data-index="${index}" aria-label="Ver detalhes: ${item.titulo}">
+            ${avisoFoiVisto(item) ? '' : '<span class="gallery-item-badge"></span>'}
             <span class="gallery-item-image${item.imagem ? '' : ' gallery-item-image--vazia'}" ${item.imagem ? `style="background-image: url('${item.imagem}')"` : ''}></span>
         </button>
     `).join('');
@@ -811,6 +820,45 @@ function configurarGaleria() {
     });
 
     configurarGaleriaModal();
+    atualizarBadgeNavAvisos();
+}
+
+// Avisos já abertos ficam guardados no aparelho para a notificação não voltar a aparecer.
+const CHAVE_AVISOS_VISTOS = 'busflix-avisos-vistos';
+
+function obterAvisosVistos() {
+    try {
+        return JSON.parse(localStorage.getItem(CHAVE_AVISOS_VISTOS)) || [];
+    } catch {
+        return [];
+    }
+}
+
+function avisoFoiVisto(item) {
+    return obterAvisosVistos().includes(item.titulo);
+}
+
+// Marca o aviso como visto e some com a bolinha vermelha do pôster e do ícone Avisos.
+function marcarAvisoComoVisto(index) {
+    const item = avisosGaleria[index];
+    if (!item || avisoFoiVisto(item)) return;
+
+    const vistos = obterAvisosVistos();
+    vistos.push(item.titulo);
+    localStorage.setItem(CHAVE_AVISOS_VISTOS, JSON.stringify(vistos));
+
+    document.querySelector(`.gallery-item[data-index="${index}"] .gallery-item-badge`)?.remove();
+    atualizarBadgeNavAvisos();
+}
+
+// Mostra no ícone "Avisos" da barra inferior quantos avisos ainda não foram abertos.
+function atualizarBadgeNavAvisos() {
+    const badge = document.getElementById('avisos-nav-badge');
+    if (!badge) return;
+
+    const naoVistos = avisosGaleria.filter(item => !avisoFoiVisto(item)).length;
+    badge.textContent = naoVistos;
+    badge.hidden = naoVistos === 0;
 }
 
 // Índice do aviso aberto no momento no modal (usado pelas setas de próximo/anterior).
@@ -868,6 +916,7 @@ function configurarGaleriaModal() {
 function abrirGaleriaModal(index) {
     indiceGaleriaAtual = index;
     preencherGaleriaModal();
+    marcarAvisoComoVisto(index);
 
     const modal = document.getElementById('gallery-modal');
     if (!modal) return;
@@ -883,6 +932,7 @@ function mudarGaleriaModal(direcao) {
     const total = avisosGaleria.length;
     indiceGaleriaAtual = (indiceGaleriaAtual + direcao + total) % total;
     preencherGaleriaModal();
+    marcarAvisoComoVisto(indiceGaleriaAtual);
 }
 
 // Só atualiza o conteúdo (imagem/título/texto/link) do modal já aberto, sem reanimar a entrada.
