@@ -93,24 +93,28 @@ function configurarOneSignal() {
     if (ONESIGNAL_APP_ID === 'COLOQUE_SEU_APP_ID_AQUI') return;
 
     window.OneSignalDeferred.push(async OneSignal => {
-        await OneSignal.init({
-            appId: ONESIGNAL_APP_ID,
-            serviceWorkerPath: 'sw.js',
-            serviceWorkerParam: { scope: './' },
-            promptOptions: {
-                slidedown: {
-                    prompts: [{
-                        type: 'push',
-                        autoPrompt: true,
-                        text: {
-                            actionMessage: 'Você deseja receber avisos e novidades do Busflix?',
-                            acceptButton: 'Permitir',
-                            cancelButton: 'Agora não'
-                        }
-                    }]
+        try {
+            await OneSignal.init({
+                appId: ONESIGNAL_APP_ID,
+                serviceWorkerPath: 'sw.js',
+                serviceWorkerParam: { scope: './' },
+                promptOptions: {
+                    slidedown: {
+                        prompts: [{
+                            type: 'push',
+                            autoPrompt: true,
+                            text: {
+                                actionMessage: 'Você deseja receber avisos e novidades do Busflix?',
+                                acceptButton: 'Permitir',
+                                cancelButton: 'Agora não'
+                            }
+                        }]
+                    }
                 }
-            }
-        });
+            });
+        } catch (erro) {
+            console.error('OneSignal não conseguiu inicializar:', erro);
+        }
     });
 }
 
