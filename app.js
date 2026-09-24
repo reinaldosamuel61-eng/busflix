@@ -87,6 +87,19 @@ let inicioArrastePaginaX = 0;
 let inicioArrastePaginaY = 0;
 let retornoHomeArmado = false;
 let configuracoesOriginais = null;
+const ONESIGNAL_APP_ID = '2be9cd65-a316-49a3-8ad6-30801406c4ca';
+
+function configurarOneSignal() {
+    if (ONESIGNAL_APP_ID === 'COLOQUE_SEU_APP_ID_AQUI') return;
+
+    window.OneSignalDeferred.push(async OneSignal => {
+        await OneSignal.init({
+            appId: ONESIGNAL_APP_ID,
+            serviceWorkerPath: 'sw.js',
+            serviceWorkerParam: { scope: './' }
+        });
+    });
+}
 
 // Modal aberto ganha uma entrada no histórico para o botão voltar fechá-lo primeiro.
 function abrirModalComHistorico(modal) {
@@ -109,6 +122,7 @@ function obterModalAberto() {
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     // Inicializa os módulos independentes da aplicação.
+    configurarOneSignal();
     configurarNavegacao();
     carregarHorarios();
     configurarCarrossel(); // Inicia o carrossel junto com o resto do site

@@ -1,3 +1,5 @@
+importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');
+
 const CACHE_NAME = 'busflix-v2';
 const APP_FILES = ['./', './index.html', './style.css', './app.js', './horarios.json', './img/logoanimado.mp4', './img/iconebusapp.png', './img/iconepequeno.png'];
 const APP_SHELL_FILES = new Set(['index.html', 'style.css', 'app.js', 'horarios.json']);

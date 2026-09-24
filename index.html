@@ -345,7 +345,11 @@
         </div>
     </div>
 
-    <script src="app.js?v=9"></script>
+    <script>
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+    </script>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script src="app.js?v=10"></script>
 
 </body>
 </html>
