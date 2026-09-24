@@ -96,7 +96,20 @@ function configurarOneSignal() {
         await OneSignal.init({
             appId: ONESIGNAL_APP_ID,
             serviceWorkerPath: 'sw.js',
-            serviceWorkerParam: { scope: './' }
+            serviceWorkerParam: { scope: './' },
+            promptOptions: {
+                slidedown: {
+                    prompts: [{
+                        type: 'push',
+                        autoPrompt: true,
+                        text: {
+                            actionMessage: 'Você deseja receber avisos e novidades do Busflix?',
+                            acceptButton: 'Permitir',
+                            cancelButton: 'Agora não'
+                        }
+                    }]
+                }
+            }
         });
     });
 }
