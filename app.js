@@ -97,7 +97,7 @@ function configurarOneSignal() {
             await OneSignal.init({
                 appId: ONESIGNAL_APP_ID,
                 serviceWorkerPath: 'sw.js',
-                serviceWorkerParam: { scope: './' },
+                serviceWorkerParam: { scope: '/busflix/' },
                 welcomeNotification: {
                     title: 'Busflix',
                     message: 'Inscrição confirmada! Você receberá avisos e novidades por aqui.',
