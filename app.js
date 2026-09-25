@@ -139,12 +139,53 @@ function obterModalAberto() {
     return [...document.querySelectorAll('[role="dialog"]')].reverse().find(modal => !modal.hidden);
 }
 
+function configurarInscricaoNotificacoes() {
+    const botao = document.getElementById('ativar-notificacoes');
+    const status = document.getElementById('notification-status');
+    if (!botao || !status) return;
+
+    botao.addEventListener('click', () => {
+        status.hidden = false;
+
+        if (!('Notification' in window)) {
+            status.textContent = 'Este navegador não oferece suporte a notificações.';
+            return;
+        }
+        if (Notification.permission === 'denied') {
+            status.textContent = 'As notificações estão bloqueadas. Habilite-as nas configurações do navegador.';
+            return;
+        }
+
+        botao.disabled = true;
+        status.textContent = 'Solicitando inscrição...';
+        window.OneSignalDeferred.push(async OneSignal => {
+            try {
+                if (OneSignal.User.PushSubscription.optedIn) {
+                    status.textContent = 'As notificações já estão ativadas neste aparelho.';
+                    return;
+                }
+
+                await OneSignal.User.PushSubscription.optIn();
+                status.textContent = OneSignal.User.PushSubscription.optedIn
+                    ? 'Notificações ativadas neste aparelho.'
+                    : 'Confirme a permissão no aviso do navegador.';
+            } catch (erro) {
+                console.error('Falha ao ativar notificações:', erro);
+                status.textContent = 'Não foi possível ativar agora. Tente novamente.';
+            } finally {
+                botao.disabled = false;
+            }
+        });
+    });
+}
+
 // ==========================================
 // 2. INICIALIZAÇÃO DO APP
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     // Inicializa os módulos independentes da aplicação.
     configurarOneSignal();
+    configurarInscricaoNotificacoes();
     configurarNavegacao();
     carregarHorarios();
     configurarCarrossel(); // Inicia o carrossel junto com o resto do site
@@ -641,14 +682,6 @@ function configurarInstalacaoPwa() {
     }
 
     navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(registro => {
-        let recarregou = false;
-        if (navigator.serviceWorker.controller) {
-            navigator.serviceWorker.addEventListener('controllerchange', () => {
-                if (recarregou) return;
-                recarregou = true;
-                window.location.reload();
-            });
-        }
         registro.update().catch(() => {});
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') registro.update().catch(() => {});

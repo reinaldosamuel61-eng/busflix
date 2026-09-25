@@ -977,6 +977,9 @@ body {
 .settings-action span { font-size: 12px; font-weight: 700; }
 .settings-action > i:first-child { color: #008A45; font-size: 14px; width: auto; }
 .settings-action.active { background: #E8F5ED; border-color: #008A45; color: #006B36; }
+.notification-subscribe { margin-top: 12px; }
+.notification-subscribe:disabled { cursor: wait; opacity: .65; }
+.notification-status { color: #667085; font-size: 12px; line-height: 1.4; margin: 8px 0 0; }
 .settings-save {
     background: #008A45;
     border: 0;
