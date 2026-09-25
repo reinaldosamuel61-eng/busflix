@@ -26,6 +26,10 @@
         <h1 class="logo-text">BUSFLIX</h1>
         <div class="header-actions">
             <button type="button" class="header-action header-help" data-page="contato" aria-label="Abrir perguntas frequentes" title="Perguntas frequentes">?</button>
+            <button type="button" class="header-action notification-bell" id="abrir-central-notificacoes" aria-label="Abrir central de notificações" title="Notificações">
+                <i class="fa-solid fa-bell" aria-hidden="true"></i>
+                <span class="notification-count" id="notification-count" hidden></span>
+            </button>
             <button type="button" class="header-action" id="abrir-configuracoes" aria-label="Abrir configurações" title="Configurações"><i class="fa-solid fa-gear"></i></button>
         </div>
     </header>
@@ -53,6 +57,8 @@
                 <button type="button" class="settings-action" id="alternar-tema"><i class="fa-solid fa-moon"></i><span>Modo escuro</span></button>
                 <button type="button" class="settings-action" id="ajustar-fonte"><i class="fa-solid fa-text-height"></i><span>Aumentar fonte</span></button>
             </div>
+            <button type="button" class="settings-action notification-subscribe" id="instalar-app-config"><i class="fa-solid fa-download" aria-hidden="true"></i><span>Instalar Busflix</span></button>
+            <p class="notification-status" id="install-status-config" role="status" aria-live="polite" hidden></p>
             <button type="button" class="settings-action notification-subscribe" id="ativar-notificacoes"><i class="fa-solid fa-bell"></i><span>Ativar notificações</span></button>
             <p class="notification-status" id="notification-status" role="status" aria-live="polite" hidden></p>
             <button type="button" id="salvar-nome" class="settings-save">Salvar</button>
@@ -76,6 +82,33 @@
             <h2 id="welcome-modal-title">Bem-vindo ao Busflix</h2>
             <p>Consulte horários e informações do transporte público de Caçapava.</p>
             <button type="button" class="settings-save" id="continuar-apresentacao">Começar</button>
+        </div>
+    </div>
+
+    <div class="setup-modal" id="setup-modal" role="dialog" aria-modal="true" aria-labelledby="setup-modal-title" hidden>
+        <div class="setup-modal-backdrop"></div>
+        <div class="setup-modal-card">
+            <span class="page-kicker"><i class="fa-solid fa-list-check" aria-hidden="true"></i> Busflix</span>
+            <h2 id="setup-modal-title">Deixe o Busflix pronto para facilitar sua rotina!</h2>
+            <ul class="setup-checklist">
+                <li data-setup-item="installed">
+                    <span class="setup-checklist-copy"><strong>Instalado</strong><small data-setup-status></small></span>
+                    <button type="button" data-setup-action="install">Instalar</button>
+                </li>
+                <li data-setup-item="notifications">
+                    <span class="setup-checklist-copy"><strong>Notificações</strong><small data-setup-status></small></span>
+                    <button type="button" data-setup-action="notifications">Ativar</button>
+                </li>
+                <li data-setup-item="favorite">
+                    <span class="setup-checklist-copy"><strong>Linha favorita</strong><small data-setup-status></small></span>
+                    <button type="button" data-setup-action="favorite">Configurar</button>
+                </li>
+                <li data-setup-item="name">
+                    <span class="setup-checklist-copy"><strong>Nome</strong><small data-setup-status></small></span>
+                    <button type="button" data-setup-action="name">Configurar</button>
+                </li>
+            </ul>
+            <button type="button" class="setup-dismiss" id="sair-setup">Sair</button>
         </div>
     </div>
 
@@ -218,6 +251,24 @@
         </div>
     </div>
 
+    <div class="weather-modal notification-center" id="notification-center" role="dialog" aria-modal="true" aria-labelledby="notification-center-title" hidden>
+        <div class="weather-modal-backdrop" id="notification-center-backdrop"></div>
+        <div class="weather-modal-card notification-center-card">
+            <div class="weather-modal-header">
+                <div>
+                    <span class="page-kicker"><i class="fa-solid fa-bell" aria-hidden="true"></i> Busflix</span>
+                    <h2 id="notification-center-title">Notificações</h2>
+                </div>
+                <button type="button" class="modal-close" id="fechar-central-notificacoes" aria-label="Fechar notificações"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="notification-center-toolbar">
+                <span id="notification-center-summary" aria-live="polite"></span>
+                <button type="button" id="limpar-notificacoes" disabled>Limpar</button>
+            </div>
+            <div class="notification-list" id="notification-list" aria-live="polite"></div>
+        </div>
+    </div>
+
     <!-- Barra de Navegação Inferior -->
     <nav class="bottom-nav">
         <a href="#horarios" class="nav-item" data-page="horarios">
@@ -351,7 +402,7 @@
         window.OneSignalDeferred = window.OneSignalDeferred || [];
     </script>
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-    <script src="app.js?v=11"></script>
+    <script src="app.js?v=12"></script>
 
 </body>
 </html>

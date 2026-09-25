@@ -87,10 +87,15 @@ let inicioArrastePaginaX = 0;
 let inicioArrastePaginaY = 0;
 let retornoHomeArmado = false;
 let configuracoesOriginais = null;
+let notificacoesAtivas = false;
 const ONESIGNAL_APP_ID = '2be9cd65-a316-49a3-8ad6-30801406c4ca';
+const CHAVE_CENTRAL_NOTIFICACOES = 'busflix-central-notificacoes';
 
 function configurarOneSignal() {
-    if (ONESIGNAL_APP_ID === 'COLOQUE_SEU_APP_ID_AQUI') return;
+    if (ONESIGNAL_APP_ID === 'COLOQUE_SEU_APP_ID_AQUI') {
+        verificarChecklistDiario();
+        return;
+    }
 
     window.OneSignalDeferred.push(async OneSignal => {
         try {
@@ -117,8 +122,18 @@ function configurarOneSignal() {
                     }
                 }
             });
+            OneSignal.Notifications.addEventListener('foregroundWillDisplay', evento => {
+                registrarNotificacaoRecebida(evento.notification || evento);
+            });
+            OneSignal.Notifications.addEventListener('click', evento => {
+                registrarNotificacaoRecebida(evento.notification || evento);
+            });
+            notificacoesAtivas = Boolean(OneSignal.User.PushSubscription.optedIn);
+            atualizarChecklistConfiguracao();
+            verificarChecklistDiario();
         } catch (erro) {
             console.error('OneSignal não conseguiu inicializar:', erro);
+            verificarChecklistDiario();
         }
     });
 }
@@ -145,37 +160,39 @@ function configurarInscricaoNotificacoes() {
     if (!botao || !status) return;
 
     botao.addEventListener('click', () => {
-        status.hidden = false;
+        solicitarNotificacoes(status, botao);
+    });
+}
 
-        if (!('Notification' in window)) {
-            status.textContent = 'Este navegador não oferece suporte a notificações.';
-            return;
-        }
-        if (Notification.permission === 'denied') {
-            status.textContent = 'As notificações estão bloqueadas. Habilite-as nas configurações do navegador.';
-            return;
-        }
+function solicitarNotificacoes(status, botao) {
+    status.hidden = false;
+    if (!('Notification' in window)) {
+        status.textContent = 'Este navegador não oferece suporte a notificações.';
+        return;
+    }
+    if (Notification.permission === 'denied') {
+        status.textContent = 'As notificações estão bloqueadas. Habilite-as nas configurações do navegador.';
+        return;
+    }
 
-        botao.disabled = true;
-        status.textContent = 'Solicitando inscrição...';
-        window.OneSignalDeferred.push(async OneSignal => {
-            try {
-                if (OneSignal.User.PushSubscription.optedIn) {
-                    status.textContent = 'As notificações já estão ativadas neste aparelho.';
-                    return;
-                }
-
+    if (botao) botao.disabled = true;
+    status.textContent = 'Solicitando inscrição...';
+    window.OneSignalDeferred.push(async OneSignal => {
+        try {
+            if (!OneSignal.User.PushSubscription.optedIn) {
                 await OneSignal.User.PushSubscription.optIn();
-                status.textContent = OneSignal.User.PushSubscription.optedIn
-                    ? 'Notificações ativadas neste aparelho.'
-                    : 'Confirme a permissão no aviso do navegador.';
-            } catch (erro) {
-                console.error('Falha ao ativar notificações:', erro);
-                status.textContent = 'Não foi possível ativar agora. Tente novamente.';
-            } finally {
-                botao.disabled = false;
             }
-        });
+            notificacoesAtivas = Boolean(OneSignal.User.PushSubscription.optedIn);
+            status.textContent = notificacoesAtivas
+                ? 'Notificações ativadas neste aparelho.'
+                : 'Confirme a permissão no aviso do navegador.';
+            atualizarChecklistConfiguracao();
+        } catch (erro) {
+            console.error('Falha ao ativar notificações:', erro);
+            status.textContent = 'Não foi possível ativar agora. Tente novamente.';
+        } finally {
+            if (botao) botao.disabled = false;
+        }
     });
 }
 
@@ -184,8 +201,10 @@ function configurarInscricaoNotificacoes() {
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     // Inicializa os módulos independentes da aplicação.
-    configurarOneSignal();
     configurarInscricaoNotificacoes();
+    configurarCentralNotificacoes();
+    configurarChecklistInicial();
+    configurarOneSignal();
     configurarNavegacao();
     carregarHorarios();
     configurarCarrossel(); // Inicia o carrossel junto com o resto do site
@@ -221,6 +240,231 @@ document.addEventListener("DOMContentLoaded", () => {
     window.setInterval(atualizarRelogioClima, 60000);
 });
 
+function obterHistoricoNotificacoes() {
+    try {
+        const historico = JSON.parse(localStorage.getItem(CHAVE_CENTRAL_NOTIFICACOES) || '[]');
+        return Array.isArray(historico) ? historico : [];
+    } catch {
+        return [];
+    }
+}
+
+function registrarNotificacaoRecebida(notificacao) {
+    if (!notificacao) return;
+
+    const titulo = notificacao.title || 'Notificação do Busflix';
+    const texto = notificacao.body || '';
+    const id = notificacao.notificationId || notificacao.id || `${titulo}:${texto}:${Date.now()}`;
+    const historico = obterHistoricoNotificacoes();
+    if (historico.some(item => item.id === id)) return;
+
+    historico.unshift({ id, titulo, texto, recebidaEm: new Date().toISOString(), lida: false });
+    localStorage.setItem(CHAVE_CENTRAL_NOTIFICACOES, JSON.stringify(historico.slice(0, 100)));
+    renderizarCentralNotificacoes();
+}
+
+function configurarCentralNotificacoes() {
+    const modal = document.getElementById('notification-center');
+    const abrir = document.getElementById('abrir-central-notificacoes');
+    const fechar = document.getElementById('fechar-central-notificacoes');
+    const backdrop = document.getElementById('notification-center-backdrop');
+    const limpar = document.getElementById('limpar-notificacoes');
+    if (!modal || !abrir || !fechar || !backdrop || !limpar) return;
+
+    const fecharCentral = () => fecharModalComHistorico(modal);
+    abrir.addEventListener('click', () => {
+        renderizarCentralNotificacoes();
+        abrirModalComHistorico(modal);
+    });
+    fechar.addEventListener('click', fecharCentral);
+    backdrop.addEventListener('click', fecharCentral);
+    limpar.addEventListener('click', () => {
+        localStorage.removeItem(CHAVE_CENTRAL_NOTIFICACOES);
+        renderizarCentralNotificacoes();
+    });
+    document.addEventListener('keydown', evento => {
+        if (evento.key === 'Escape' && !modal.hidden) fecharCentral();
+    });
+    renderizarCentralNotificacoes();
+}
+
+function renderizarCentralNotificacoes() {
+    const lista = document.getElementById('notification-list');
+    const contador = document.getElementById('notification-count');
+    const resumo = document.getElementById('notification-center-summary');
+    const limpar = document.getElementById('limpar-notificacoes');
+    if (!lista || !contador || !resumo || !limpar) return;
+
+    const historico = obterHistoricoNotificacoes();
+    const naoLidas = historico.filter(item => !item.lida).length;
+    contador.textContent = naoLidas > 99 ? '99+' : String(naoLidas);
+    contador.hidden = naoLidas === 0;
+    contador.parentElement?.setAttribute('aria-label', naoLidas ? `Central de notificações, ${naoLidas} não lidas` : 'Central de notificações');
+    resumo.textContent = historico.length ? `${naoLidas} não lidas · ${historico.length} no histórico` : 'Nenhuma notificação';
+    limpar.disabled = historico.length === 0;
+
+    if (!historico.length) {
+        lista.innerHTML = '<p class="notification-empty">Suas notificações recebidas aparecerão aqui.</p>';
+        return;
+    }
+
+    lista.replaceChildren(...historico.map(item => {
+        const artigo = document.createElement('article');
+        artigo.className = `notification-item${item.lida ? '' : ' is-unread'}`;
+
+        const cabecalho = document.createElement('div');
+        cabecalho.className = 'notification-item-heading';
+        const titulo = document.createElement('h3');
+        titulo.textContent = item.titulo;
+        cabecalho.append(titulo);
+        if (!item.lida) {
+            const marcador = document.createElement('i');
+            marcador.className = 'fa-solid fa-circle';
+            marcador.setAttribute('aria-label', 'Não lida');
+            cabecalho.append(marcador);
+        }
+        artigo.append(cabecalho);
+
+        if (item.texto) {
+            const texto = document.createElement('p');
+            texto.textContent = item.texto;
+            artigo.append(texto);
+        }
+
+        const data = new Date(item.recebidaEm);
+        const horario = document.createElement('time');
+        horario.dateTime = item.recebidaEm;
+        horario.textContent = Number.isNaN(data.getTime()) ? '' : data.toLocaleString('pt-BR');
+        artigo.append(horario);
+
+        const acao = document.createElement('button');
+        acao.type = 'button';
+        acao.textContent = item.lida ? 'Lida' : 'Marcar como lida';
+        acao.disabled = item.lida;
+        acao.addEventListener('click', () => marcarNotificacaoComoLida(item.id));
+        artigo.append(acao);
+        return artigo;
+    }));
+}
+
+function marcarNotificacaoComoLida(id) {
+    const historico = obterHistoricoNotificacoes().map(item => item.id === id ? { ...item, lida: true } : item);
+    localStorage.setItem(CHAVE_CENTRAL_NOTIFICACOES, JSON.stringify(historico));
+    renderizarCentralNotificacoes();
+}
+
+
+const CHAVE_CHECKLIST_DIARIO = 'busflix-checklist-data';
+const MODO_TESTE_CHECKLIST = false;
+
+function configurarChecklistInicial() {
+    const modal = document.getElementById('setup-modal');
+    const sair = document.getElementById('sair-setup');
+    if (!modal || !sair) return;
+
+    sair.addEventListener('click', fecharChecklist);
+    modal.querySelectorAll('[data-setup-action]').forEach(botao => {
+        botao.addEventListener('click', () => {
+            const acao = botao.dataset.setupAction;
+            if (acao === 'install') {
+                executarInstalacao();
+            } else if (acao === 'notifications') {
+                solicitarNotificacoes(botao.closest('li').querySelector('[data-setup-status]'), botao);
+            } else if (acao === 'favorite') {
+                abrirConfiguracoes('favorite-line-select');
+            } else if (acao === 'name') {
+                abrirConfiguracoes('nome-usuario');
+            }
+        });
+    });
+}
+
+function obterEstadoChecklist() {
+    return {
+        installed: appEstaInstalado(),
+        notifications: notificacoesAtivas,
+        favorite: Boolean(localStorage.getItem('busflix-linha-favorita')),
+        name: Boolean(localStorage.getItem('busflix-nome')?.trim())
+    };
+}
+
+function appEstaInstalado() {
+    return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+}
+
+function atualizarChecklistConfiguracao() {
+    const modal = document.getElementById('setup-modal');
+    if (!modal) return;
+    const estado = obterEstadoChecklist();
+    Object.entries(estado).forEach(([chave, concluido]) => {
+        const item = modal.querySelector(`[data-setup-item="${chave}"]`);
+        if (!item) return;
+        item.classList.toggle('is-complete', concluido);
+        item.querySelector('[data-setup-status]').textContent = concluido ? '✅ Concluído' : 'Pendente';
+        const botao = item.querySelector('[data-setup-action]');
+        botao.hidden = concluido;
+    });
+
+    if (Object.values(estado).every(Boolean) && !modal.hidden) fecharChecklist();
+}
+
+function dataLocalAtual() {
+    const agora = new Date();
+    return `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, '0')}-${String(agora.getDate()).padStart(2, '0')}`;
+}
+
+function verificarChecklistDiario() {
+    const modal = document.getElementById('setup-modal');
+    if (!modal || !modal.hidden || document.getElementById('app-splash') || document.querySelector('[role="dialog"]:not([hidden])')) return;
+    const apresentacao = document.getElementById('welcome-modal');
+    if (apresentacao && !apresentacao.hidden) return;
+    atualizarChecklistConfiguracao();
+    const estado = obterEstadoChecklist();
+    if (Object.values(estado).every(Boolean)) return;
+    const hoje = dataLocalAtual();
+    if (!MODO_TESTE_CHECKLIST && localStorage.getItem(CHAVE_CHECKLIST_DIARIO) === hoje) return;
+
+    if (!MODO_TESTE_CHECKLIST) localStorage.setItem(CHAVE_CHECKLIST_DIARIO, hoje);
+    abrirModalComHistorico(modal);
+}
+
+function fecharChecklist() {
+    const modal = document.getElementById('setup-modal');
+    if (modal && !modal.hidden) fecharModalComHistorico(modal);
+}
+
+async function executarInstalacao(status = document.querySelector('[data-setup-item="installed"] [data-setup-status]')) {
+    if (appEstaInstalado()) {
+        if (status) {
+            status.hidden = false;
+            status.textContent = 'O Busflix já está instalado neste aparelho.';
+        }
+        atualizarStatusInstalacaoConfiguracoes();
+        atualizarChecklistConfiguracao();
+        return;
+    }
+    if (!promptInstalacao) {
+        if (status) {
+            status.hidden = false;
+            status.textContent = 'Use o menu do navegador e escolha "Instalar app" ou "Adicionar à tela inicial".';
+        }
+        return;
+    }
+
+    const promptAtual = promptInstalacao;
+    promptInstalacao = null;
+    try {
+        await promptAtual.prompt();
+        const escolha = await promptAtual.userChoice;
+        if (escolha.outcome !== 'accepted' && status) status.textContent = 'Instalação não concluída.';
+    } catch (erro) {
+        console.error('Falha ao iniciar a instalação:', erro);
+        if (status) status.textContent = 'Não foi possível iniciar a instalação.';
+    }
+    atualizarChecklistConfiguracao();
+    const aviso = document.getElementById('install-notice');
+    if (aviso) aviso.hidden = true;
+}
 function configurarFaq() {
     const faq = document.querySelector('.faq-section');
     if (!faq) return;
@@ -392,6 +636,7 @@ function abrirConfiguracoes(campoFoco = 'nome-usuario') {
     document.body.classList.toggle('large-font', configuracoesOriginais.fonte);
     atualizarControleTema(configuracoesOriginais.tema);
     atualizarControleFonte(configuracoesOriginais.fonte);
+    document.body.classList.toggle('setup-settings-open', Boolean(document.getElementById('setup-modal') && !document.getElementById('setup-modal').hidden));
     abrirModalComHistorico(painel);
     const campo = document.getElementById(campoFoco);
     campo?.focus();
@@ -411,7 +656,10 @@ function fecharConfiguracoes() {
         renderizarProximosHorarios();
     }
     configuracoesOriginais = null;
+    document.body.classList.remove('setup-settings-open');
     fecharModalComHistorico(painel);
+    atualizarChecklistConfiguracao();
+    verificarChecklistDiario();
 }
 
 function salvarNomeUsuario() {
@@ -598,13 +846,19 @@ function mostrarConfirmacaoConfiguracoes() {
 function configurarTelaAbertura() {
     const tela = document.getElementById('app-splash');
     const video = document.getElementById('splash-video');
-    if (!tela || !video) return;
+    if (!tela || !video) {
+        verificarChecklistDiario();
+        return;
+    }
     document.body.classList.add('splash-active');
 
     const fechar = () => {
         tela.classList.add('is-hidden');
         document.body.classList.remove('splash-active');
-        window.setTimeout(() => tela.remove(), 350);
+        window.setTimeout(() => {
+            tela.remove();
+            verificarChecklistDiario();
+        }, 350);
     };
     video.addEventListener('ended', fechar, { once: true });
     video.addEventListener('error', fechar, { once: true });
@@ -654,24 +908,30 @@ function configurarInstalacaoPwa() {
     const aviso = document.getElementById('install-notice');
     const instalar = document.getElementById('instalar-app');
     const fechar = document.getElementById('fechar-install');
+    const instalarConfiguracoes = document.getElementById('instalar-app-config');
     if (!aviso || !instalar || !fechar) return;
 
+    instalarConfiguracoes?.addEventListener('click', () => {
+        executarInstalacao(document.getElementById('install-status-config'));
+    });
+    atualizarStatusInstalacaoConfiguracoes();
     window.addEventListener('beforeinstallprompt', evento => {
         evento.preventDefault();
         promptInstalacao = evento;
         aviso.hidden = false;
+        atualizarStatusInstalacaoConfiguracoes();
+        atualizarChecklistConfiguracao();
     });
-    instalar.addEventListener('click', async () => {
-        if (!promptInstalacao) return;
-        promptInstalacao.prompt();
-        await promptInstalacao.userChoice;
-        promptInstalacao = null;
-        aviso.hidden = true;
-    });
+    instalar.addEventListener('click', executarInstalacao);
     fechar.addEventListener('click', () => {
         aviso.hidden = true;
     });
-    window.addEventListener('appinstalled', () => { aviso.hidden = true; });
+    window.addEventListener('appinstalled', () => {
+        aviso.hidden = true;
+        promptInstalacao = null;
+        atualizarStatusInstalacaoConfiguracoes();
+        atualizarChecklistConfiguracao();
+    });
 
     if (!('serviceWorker' in navigator)) return;
 
@@ -687,6 +947,18 @@ function configurarInstalacaoPwa() {
             if (document.visibilityState === 'visible') registro.update().catch(() => {});
         });
     }).catch(console.error);
+}
+
+function atualizarStatusInstalacaoConfiguracoes() {
+    const botao = document.getElementById('instalar-app-config');
+    const status = document.getElementById('install-status-config');
+    if (!botao || !status) return;
+
+    const instalado = appEstaInstalado();
+    botao.disabled = instalado;
+    botao.querySelector('span').textContent = instalado ? 'Já instalado' : 'Instalar Busflix';
+    status.hidden = !instalado;
+    status.textContent = instalado ? 'O Busflix já está instalado neste aparelho.' : '';
 }
 
 async function desativarCacheNoAmbienteLocal() {
@@ -1233,6 +1505,7 @@ function configurarLinhaFavorita() {
     preencherSeletorLinhaFavorita(linhas);
     renderizarSentidosFavorita();
     renderizarProximosHorarios();
+    atualizarChecklistConfiguracao();
 }
 
 function configurarAcoesFavoritaHome() {
