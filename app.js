@@ -35,6 +35,20 @@ const avisosGaleria = [
         imagem: 'img/galeria/pesquisa.png'
     },
     {
+        titulo: 'Vagas do PAT',
+        texto: 'Confira as vagas disponíveis no PAT de Caçapava.',
+        link: 'Acessar vagas',
+        url: 'https://cacapava.sp.gov.br/vamos-trabalhar/vamos-trabalhar-1',
+        imagem: 'img/galeria/7.png'
+    },
+    {
+        titulo: 'Supermercado Big Berg',
+        texto: 'Encontre produtos de qualidade e ofertas imperdíveis no Supermercado Big Berg.',
+        link: 'Grupo de ofertas',
+        url: 'https://chat.whatsapp.com/FQFjLrnypbKIH6ctFdqlj1?s=cl&p=a&mlu=4&iam=0',
+        imagem: 'img/galeria/6.png'
+    },
+    {
         titulo: 'Padaria Le Chef',
         texto: 'Venha experimentar os deliciosos pães e doces da Padaria Le Chef.',
         link: 'Falar no WhatsApp',
