@@ -9,8 +9,8 @@
 //   - alt:    texto alternativo (acessibilidade/leitor de tela), descreva o que a imagem mostra
 // Para REMOVER um banner, basta apagar o objeto correspondente.
 const bannersHome = [
-    { imagem: 'img/banners/avisos.png', link: '#avisos', alt: 'Aviso sobre o horário de circulação no feriado de 09 de julho' },
-    { imagem: 'img/banners/avisos 2.png', link: '#avisos', alt: 'Informação do transporte público' },
+    { imagem: 'img/banners/busflix.png', link: '#avisos', alt: 'Informação do transporte público' },
+    { imagem: 'img/banners/aviso.png', link: '#avisos', alt: 'Aviso sobre o horário de circulação no feriado de 09 de julho' },
     { imagem: 'img/banners/pesquisa.png', link: 'https://forms.gle/2kg7cgZAi914dwum6', alt: 'pesquisa de opinião dos usuários' },
     { imagem: 'img/banners/pat.png', link: 'https://cacapava.sp.gov.br/vamos-trabalhar/vamos-trabalhar-1', alt: 'vagas de emprego no PAT de Caçapava' },
     { imagem: 'img/banners/agenda.png', link: 'https://www.cmdpro.com.br/cacapava/portaldasaude', alt: 'Agende a sua consulta de forma rápida e prática com o Agenda Fácil' },
