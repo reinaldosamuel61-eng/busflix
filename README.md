@@ -41,10 +41,10 @@ O projeto foi desenvolvido como parte do **Projeto Integrador (PI) do curso Téc
 - Previsão atual de Caçapava-SP com temperatura, condição, horário de atualização e ícones dinâmicos de dia/noite, exibida abaixo da saudação e acima do banner.
 - Modal de previsão com as 24 horas do dia atual, destaque para a hora corrente e previsão dos próximos 7 dias.
 - Carrossel de banners na página inicial.
-- Carrossel de banners também na página Avisos, sincronizado com a Home.
+- Carrossel de banners também na página Galeria, sincronizado com a Home.
 - Galeria de avisos e novidades com modal de detalhes.
 - Fluxo de contato em duas etapas: aviso de independência do app e contatos da Viação Cidade Natureza.
-- Navegação por menu inferior e gesto de deslizar entre páginas.
+- Navegação entre páginas pelos ícones do menu inferior.
 - Botão voltar do dispositivo com retorno para a Home.
 - Confirmação de saída após duas tentativas de voltar na Home.
 - Formulário de contato com o desenvolvedor integrado ao Formspree.
@@ -170,11 +170,14 @@ Os itens da galeria ficam na constante `avisosGaleria`, também em `app.js`:
 ```javascript
 {
     titulo: 'Título do aviso',
+    categoria: 'servicos', // 'servicos' ou 'parceiros'
     texto: 'Descrição exibida no modal.',
     link: 'Texto complementar',
     imagem: 'img/banners/aviso.png'
 }
 ```
+
+A galeria oferece os filtros **Todos**, **Serviços** e **Parceiros**. O filtro **Todos** é restaurado sempre que a página é aberta.
 
 As imagens da galeria usam proporção **2:3**, por exemplo `800 x 1200 px`.
 
@@ -229,9 +232,7 @@ Ao publicar alterações, mantenha o app em HTTPS ou em um servidor local compat
 
 - A navegação usa hashes como `#home`, `#horarios`, `#avisos`, `#contato` e `#sobre`.
 - O histórico do navegador é atualizado ao trocar de página.
-- O gesto horizontal é organizado assim:
-  - Direita: Home → Avisos → Horários.
-  - Esquerda: Home → Contato → Sobre.
+- A página Galeria mantém o hash `#avisos` para preservar os links existentes.
 - Modais podem ser fechados pelo botão de fechar, pelo fundo externo ou pela tecla `Esc`.
 - Controles possuem rótulos acessíveis e os campos do formulário usam associação entre `label` e entrada.
 - O tema e o tamanho da fonte escolhidos ficam salvos no `localStorage`.

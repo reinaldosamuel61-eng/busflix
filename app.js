@@ -5,7 +5,7 @@
 // Cada item é um banner. Para ADICIONAR um novo banner, copie um objeto e cole no final
 // da lista (a ordem aqui é a ordem em que eles aparecem no carrossel):
 //   - imagem: caminho do arquivo da imagem dentro de img/banners/
-//   - link:   para onde o usuário vai ao tocar no banner (ex: '#avisos' abre a aba Avisos)
+//   - link:   para onde o usuário vai ao tocar no banner (ex: '#avisos' abre a página Galeria)
 //   - alt:    texto alternativo (acessibilidade/leitor de tela), descreva o que a imagem mostra
 // Para REMOVER um banner, basta apagar o objeto correspondente.
 const bannersHome = [
@@ -13,12 +13,15 @@ const bannersHome = [
     { imagem: 'img/banners/avisos 2.png', link: '#avisos', alt: 'Informação do transporte público' },
     { imagem: 'img/banners/pesquisa.png', link: 'https://forms.gle/2kg7cgZAi914dwum6', alt: 'pesquisa de opinião dos usuários' },
     { imagem: 'img/banners/pat.png', link: 'https://cacapava.sp.gov.br/vamos-trabalhar/vamos-trabalhar-1', alt: 'vagas de emprego no PAT de Caçapava' },
+    { imagem: 'img/banners/agenda.png', link: 'https://www.cmdpro.com.br/cacapava/portaldasaude', alt: 'Agende a sua consulta de forma rápida e prática com o Agenda Fácil' },
+    { imagem: 'img/banners/noticias.png', link: 'https://g1.globo.com/sp/vale-do-paraiba-regiao/cidade/cacapava/', alt: 'Últimas notícias de Caçapava' },
 ];
 
-// Lista única de avisos da galeria (sem categorias). Cada objeto é um "pôster" que
-// aparece na grade da página Avisos e, ao tocar, abre no modal com todos os detalhes.
+// Lista única de avisos da galeria. Cada objeto é um "pôster" que
+// aparece na grade da página Galeria e, ao tocar, abre no modal com todos os detalhes.
 // Campos de cada aviso:
 //   - titulo: título grande dentro do modal (e usado como texto alternativo do pôster)
+//   - categoria: 'servicos' ou 'parceiros', usada nos filtros da galeria
 //   - texto:  texto/descrição abaixo do título, mostrado só dentro do modal
 //   - link:   texto do botão/link verde no final do modal (não precisa ser um link real)
 //   - imagem: (opcional) caminho da imagem de capa em img/banners/. Se remover este
@@ -29,6 +32,7 @@ const avisosGaleria = [
     
     {
         titulo: 'Pesquisa sobre o BusFlix',
+        categoria: 'servicos',
         texto: 'Participe da pesquisa de opinião sobre o BusFlix e ajude a melhorar o serviço.',
         link: 'Participar da pesquisa',
         url: 'https://forms.gle/2kg7cgZAi914dwum6',
@@ -36,56 +40,80 @@ const avisosGaleria = [
     },
     {
         titulo: 'Vagas do PAT',
+        categoria: 'servicos',
         texto: 'Confira as vagas disponíveis no PAT de Caçapava.',
         link: 'Acessar vagas',
         url: 'https://cacapava.sp.gov.br/vamos-trabalhar/vamos-trabalhar-1',
-        imagem: 'img/galeria/7.png'
+        imagem: 'img/galeria/pat.png'
     },
     {
         titulo: 'Supermercado Big Berg',
+        categoria: 'parceiros',
         texto: 'Encontre produtos de qualidade e ofertas imperdíveis no Supermercado Big Berg.',
         link: 'Grupo de ofertas',
         url: 'https://chat.whatsapp.com/FQFjLrnypbKIH6ctFdqlj1?s=cl&p=a&mlu=4&iam=0',
-        imagem: 'img/galeria/6.png'
+        imagem: 'img/galeria/bigberg.png'
     },
     {
         titulo: 'Padaria Le Chef',
+        categoria: 'parceiros',
         texto: 'Venha experimentar os deliciosos pães e doces da Padaria Le Chef.',
         link: 'Falar no WhatsApp',
         url: 'https://wa.me/5512996307776',
-        imagem: 'img/galeria/1.png'
+        imagem: 'img/galeria/lechef.png'
     },
     {
         titulo: 'Papelaria PacMan Games',
+        categoria: 'parceiros',
         texto: 'Canecas personalizadas e outros itens que você precisa na Papelaria PacMan Games.',
         link: 'Falar no WhatsApp',
         url: 'https://wa.me/5512997826116',
-        imagem: 'img/galeria/2.png'
+        imagem: 'img/galeria/pacman.png'
     },
     {
         titulo: 'GF Barbearia',
+        categoria: 'parceiros',
         texto: 'Cortes de cabelo modernos e atendimento de qualidade na GF Barbearia.',
         link: 'Falar no WhatsApp',
         url: 'https://wa.me/5512997899591',
-        imagem: 'img/galeria/3.png'
+        imagem: 'img/galeria/gfbarbearia.png'
     },
     {
         titulo: 'Doceceria',
+        categoria: 'parceiros',
         texto: 'Deliciosos doces e sobremesas na Doceceria.',
         link: 'Falar no WhatsApp',
         url: 'https://wa.me/5512996203650',
-        imagem: 'img/galeria/4.png'
+        imagem: 'img/galeria/doceceria.png'
     },
     {
         titulo: 'Assembléia de Deus Madureira',
+        categoria: 'parceiros',
         texto: 'Fique por dentro dos cultos e atividades na nossa igreja.',
         link: 'Ver no Instagram',
         url: 'https://www.instagram.com/admadureiravilamedeiros/',
-        imagem: 'img/galeria/5.png'
+        imagem: 'img/galeria/igreja.png'
+    },
+    {
+        titulo: 'Notícias de Caçapava',
+        categoria: 'servicos',
+        texto: 'Fique por dentro das últimas notícias e atualizações de Caçapava.',
+        link: 'Acessar notícias',
+        url: 'https://g1.globo.com/sp/vale-do-paraiba-regiao/cidade/cacapava/',
+        imagem: 'img/galeria/noticias.png'
+    },
+    {
+        titulo: 'Agenda Fácil',
+        categoria: 'servicos',
+        texto: 'Agende a sua consulta de forma rápida e prática com o Agenda Fácil.',
+        link: 'Acessar Portal da Saúde',
+        url: 'https://www.cmdpro.com.br/cacapava/portaldasaude',
+        imagem: 'img/galeria/agenda.png'
     }
 ];
 
 let slideAtual = 0;
+let filtroGaleriaAtual = 'todos';
 let dadosGerais = [];
 let intervaloCarrossel;
 let saidaAtual = 0;
@@ -95,10 +123,7 @@ let linhaFavorita = localStorage.getItem('busflix-linha-favorita') || '';
 let sentidoFavorito = Number(localStorage.getItem('busflix-sentido-favorito')) || 0;
 let promptInstalacao;
 const paginasNavegacao = ['home', 'horarios', 'avisos', 'contato', 'sobre'];
-const ordemSwipe = ['sobre', 'contato', 'home', 'avisos', 'horarios'];
 let paginaAtual = 'home';
-let inicioArrastePaginaX = 0;
-let inicioArrastePaginaY = 0;
 let retornoHomeArmado = false;
 let configuracoesOriginais = null;
 let notificacoesAtivas = false;
@@ -1000,9 +1025,45 @@ function configurarCarrossel() {
     if (btnsEsq.length && btnsDir.length) {
         btnsEsq.forEach(botao => botao.addEventListener('click', () => mudarSlide(-1)));
         btnsDir.forEach(botao => botao.addEventListener('click', () => mudarSlide(1)));
+        configurarArrasteCarrossel();
         renderizarSlide();
         iniciarRotacaoAutomatica();
     }
+}
+
+// Permite trocar de banner arrastando para os lados (os botões continuam funcionando).
+function configurarArrasteCarrossel() {
+    document.querySelectorAll('.partner-card .card-body').forEach(area => {
+        let inicioX = 0;
+        let inicioY = 0;
+        let arrastou = false;
+
+        area.addEventListener('touchstart', evento => {
+            inicioX = evento.changedTouches[0].clientX;
+            inicioY = evento.changedTouches[0].clientY;
+            arrastou = false;
+        }, { passive: true });
+
+        area.addEventListener('touchend', evento => {
+            const deslocamentoX = evento.changedTouches[0].clientX - inicioX;
+            const deslocamentoY = evento.changedTouches[0].clientY - inicioY;
+            if (Math.abs(deslocamentoX) < 40 || Math.abs(deslocamentoX) <= Math.abs(deslocamentoY)) return;
+
+            arrastou = true;
+            mudarSlide(deslocamentoX < 0 ? 1 : -1);
+            // Reinicia o tempo para o banner não trocar logo após o gesto.
+            window.clearInterval(intervaloCarrossel);
+            iniciarRotacaoAutomatica();
+        }, { passive: true });
+
+        // Evita abrir o link do banner quando o toque foi um arraste.
+        area.addEventListener('click', evento => {
+            if (!arrastou) return;
+            evento.preventDefault();
+            evento.stopPropagation();
+            arrastou = false;
+        }, true);
+    });
 }
 
 function iniciarRotacaoAutomatica() {
@@ -1058,6 +1119,7 @@ function configurarNavegacao() {
         paginaAtual = paginasNavegacao.includes(pagina) ? pagina : 'home';
         botoes.forEach(btn => btn.classList.toggle('active', btn.dataset.page === paginaAtual));
         secoes.forEach(secao => secao.classList.toggle('active', secao.id === `${paginaAtual}-page`));
+        if (paginaAtual === 'avisos') atualizarFiltroGaleria('todos');
     };
 
     const navegarPara = (pagina, substituir = false) => {
@@ -1140,24 +1202,6 @@ function configurarNavegacao() {
         mostrarConfirmacaoSaida();
     });
 
-    const principal = document.querySelector('.home-content');
-    principal?.addEventListener('touchstart', evento => {
-        if (evento.target.closest('button, a, input, select, textarea, .gallery-modal')) return;
-        const toque = evento.changedTouches[0];
-        inicioArrastePaginaX = toque.clientX;
-        inicioArrastePaginaY = toque.clientY;
-    }, { passive: true });
-    principal?.addEventListener('touchend', evento => {
-        if (evento.target.closest('button, a, input, select, textarea, .gallery-modal')) return;
-        const toque = evento.changedTouches[0];
-        const deslocamentoX = toque.clientX - inicioArrastePaginaX;
-        const deslocamentoY = toque.clientY - inicioArrastePaginaY;
-        if (Math.abs(deslocamentoX) < 60 || Math.abs(deslocamentoX) <= Math.abs(deslocamentoY)) return;
-
-        const indicePagina = ordemSwipe.indexOf(paginaAtual);
-        const proximaPagina = ordemSwipe[indicePagina + (deslocamentoX > 0 ? 1 : -1)];
-        if (proximaPagina) navegarPara(proximaPagina);
-    }, { passive: true });
 }
 
 // Monta a grade de pôsteres (estilo catálogo da Netflix: só a imagem, sem legenda visível)
@@ -1168,11 +1212,15 @@ function configurarGaleria() {
 
     // Cada item da galeria é um botão com a imagem de capa (ou um fundo colorido, se não tiver imagem).
     grade.innerHTML = avisosGaleria.map((item, index) => `
-        <button type="button" class="gallery-item" data-index="${index}" aria-label="Ver detalhes: ${item.titulo}">
+        <button type="button" class="gallery-item" data-index="${index}" data-category="${item.categoria}" aria-label="Ver detalhes: ${item.titulo}">
             ${avisoFoiVisto(item) ? '' : '<span class="gallery-item-badge">Novo</span>'}
             <span class="gallery-item-image${item.imagem ? '' : ' gallery-item-image--vazia'}" ${item.imagem ? `style="background-image: url('${item.imagem}')"` : ''}></span>
         </button>
     `).join('');
+
+    document.querySelectorAll('[data-gallery-filter]').forEach(botao => {
+        botao.addEventListener('click', () => atualizarFiltroGaleria(botao.dataset.galleryFilter));
+    });
 
     grade.addEventListener('click', evento => {
         const botao = evento.target.closest('[data-index]');
@@ -1180,8 +1228,24 @@ function configurarGaleria() {
         abrirGaleriaModal(Number(botao.dataset.index));
     });
 
+    atualizarFiltroGaleria(filtroGaleriaAtual);
     configurarGaleriaModal();
     atualizarBadgeNavAvisos();
+}
+
+function atualizarFiltroGaleria(filtro) {
+    const filtrosValidos = ['todos', 'servicos', 'parceiros'];
+    filtroGaleriaAtual = filtrosValidos.includes(filtro) ? filtro : 'todos';
+
+    document.querySelectorAll('[data-gallery-filter]').forEach(botao => {
+        const ativo = botao.dataset.galleryFilter === filtroGaleriaAtual;
+        botao.classList.toggle('active', ativo);
+        botao.setAttribute('aria-pressed', String(ativo));
+    });
+
+    document.querySelectorAll('.gallery-item').forEach(item => {
+        item.hidden = filtroGaleriaAtual !== 'todos' && item.dataset.category !== filtroGaleriaAtual;
+    });
 }
 
 // Avisos já abertos ficam guardados no aparelho para a notificação não voltar a aparecer.

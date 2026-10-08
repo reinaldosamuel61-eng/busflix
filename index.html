@@ -179,21 +179,26 @@
             </div>
         </section>
 
-        <section class="page gallery-page" id="avisos-page" aria-labelledby="avisos-title">
+        <section class="page gallery-page" id="avisos-page" aria-labelledby="galeria-title">
             <div class="page-heading">
-                <h2 id="avisos-title">Avisos e Novidades</h2>
+                <h2 id="galeria-title">Avisos e Novidades</h2>
                 <p>Toque em uma imagem para ver os detalhes.</p>
             </div>
             <section class="partner-card avisos-banner">
                 <div class="card-body">
                     <button class="nav-arrow left" aria-label="Banner anterior"><i class="fa-solid fa-chevron-left"></i></button>
                     <a class="home-banner-link" href="#avisos" data-page="avisos">
-                        <img class="home-banner-image" src="" alt="Banner de avisos">
+                        <img class="home-banner-image" src="" alt="Banner da galeria">
                     </a>
                     <button class="nav-arrow right" aria-label="Próximo banner"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
                 <div class="carousel-dots"></div>
             </section>
+            <div class="gallery-filters" role="group" aria-label="Filtrar itens da galeria">
+                <button type="button" class="gallery-filter active" data-gallery-filter="todos" aria-pressed="true">Todos</button>
+                <button type="button" class="gallery-filter" data-gallery-filter="servicos" aria-pressed="false">Serviços</button>
+                <button type="button" class="gallery-filter" data-gallery-filter="parceiros" aria-pressed="false">Parceiros</button>
+            </div>
             <div class="gallery-grid" id="gallery-grid"></div>
         </section>
 
@@ -278,7 +283,7 @@
         <a href="#avisos" class="nav-item" data-page="avisos">
             <i class="fa-solid fa-bullhorn"></i>
             <span class="nav-badge" id="avisos-nav-badge" hidden></span>
-            <span>Avisos</span>
+            <span>Galeria</span>
         </a>
         
         <!-- Botão Home Flutuante -->

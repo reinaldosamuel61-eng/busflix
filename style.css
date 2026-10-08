@@ -364,6 +364,35 @@ body {
 }
 
 /* Galeria estilo catálogo (Netflix): fundo preto só atrás da grade de pôsteres. */
+.gallery-filters {
+    display: flex;
+    gap: 10px;
+    margin: 0 0 14px;
+}
+
+.gallery-filter {
+    background: #FFFFFF;
+    border: 1px solid #D0D5DD;
+    border-radius: 999px;
+    color: #344054;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 9px 16px;
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+
+.gallery-filter.active {
+    background: #008A45;
+    border-color: #008A45;
+    color: #FFFFFF;
+}
+
+.gallery-filter:focus-visible {
+    outline: 3px solid rgba(0, 138, 69, .3);
+    outline-offset: 2px;
+}
+
 .gallery-grid {
     background: #000000;
     border-radius: 16px;
@@ -373,6 +402,8 @@ body {
     margin: 6px 0 30px;
     padding: 14px;
 }
+
+.gallery-item[hidden] { display: none; }
 
 .gallery-item {
     background: #101614;
@@ -1146,6 +1177,7 @@ body {
 .dark-mode .top-bar { box-shadow: 0 2px 5px rgba(0,0,0,.28); }
 .dark-mode .page-heading h2, .dark-mode .favorite-line-trigger-copy strong, .dark-mode .favorite-line-modal h2, .dark-mode .favorite-line-option { color: #E7ECE9; }
 .dark-mode .page-heading p, .dark-mode .about-copy, .dark-mode .favorite-line-trigger-copy small, .dark-mode .modal-description { color: #AABBB2; }
+.dark-mode .gallery-filter:not(.active) { background: #1B2924; border-color: #385046; color: #E7ECE9; }
 .dark-mode .next-schedules-title { color: #E7ECE9; }
 .dark-mode .greeting p { color: #E7ECE9; }
 .dark-mode .favorite-line-fare { color: #8BD3A8; }
