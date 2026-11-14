@@ -933,7 +933,7 @@ function atualizarControleTema(escuro) {
     botao.innerHTML = `<i class="fa-solid fa-${escuro ? 'sun' : 'moon'}"></i><span>${texto}</span>`;
     botao.setAttribute('aria-label', escuro ? 'Ativar modo claro' : 'Ativar modo escuro');
     botao.title = escuro ? 'Modo claro' : 'Modo escuro';
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', escuro ? '#111A17' : '#FFFFFF');
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#000000');
 }
 
 function atualizarControleFonte(grande) {
